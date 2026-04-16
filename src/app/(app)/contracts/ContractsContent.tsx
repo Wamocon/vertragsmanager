@@ -93,13 +93,22 @@ export function ContractsContent({ contracts, categories, userRole }: ContractsC
         )}
       </div>
 
+      <Card className="p-0">
+        <CardContent className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-zinc-600 dark:text-zinc-300">{t('guidedHint')}</p>
+          <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+            {t('resultCount', { count: filtered.length })}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px] max-w-xs">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
           <input
             type="text"
-            placeholder={`${t('title')} ${t('sortProvider')}...`}
+            placeholder={t('searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full rounded-lg border border-zinc-300 bg-white py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
@@ -122,7 +131,7 @@ export function ContractsContent({ contracts, categories, userRole }: ContractsC
           onChange={(e) => setStatusFilter(e.target.value)}
           className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
         >
-          <option value="active_only">Aktive Verträge</option>
+          <option value="active_only">{t('activeContracts')}</option>
           <option value="all">{t('allStatuses')}</option>
           <option value="active">{t('statusActive')}</option>
           <option value="expiring_soon">{t('statusExpiringSoon')}</option>
@@ -154,7 +163,7 @@ export function ContractsContent({ contracts, categories, userRole }: ContractsC
       {/* Results */}
       {filtered.length === 0 ? (
         <div className="py-12 text-center">
-          <p className="text-zinc-500 dark:text-zinc-400">Keine Verträge gefunden</p>
+          <p className="text-zinc-500 dark:text-zinc-400">{t('emptyFiltered')}</p>
         </div>
       ) : view === 'cards' ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -184,7 +193,7 @@ export function ContractsContent({ contracts, categories, userRole }: ContractsC
                     </div>
                     {contract.cancellation_deadline && (
                       <div className="text-right">
-                        <p className="text-xs text-zinc-500">Kündigungsfrist</p>
+                        <p className="text-xs text-zinc-500">{t('cancellationDeadline')}</p>
                         <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
                           {new Date(contract.cancellation_deadline).toLocaleDateString('de-DE')}
                         </p>

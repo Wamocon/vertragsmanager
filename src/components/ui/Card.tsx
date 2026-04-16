@@ -8,18 +8,25 @@ interface CardProps {
 
 export function Card({ children, className }: CardProps) {
   return (
-    <div className={cn('rounded-xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900', className)}>
+    <div
+      className={cn(
+        'surface-card rounded-2xl p-5 transition-all sm:p-6',
+        'hover:shadow-[var(--shadow-medium)]',
+        'dark:bg-surface-elevated/80',
+        className,
+      )}
+    >
       {children}
     </div>
   );
 }
 
 export function CardHeader({ children, className }: CardProps) {
-  return <div className={cn('mb-4', className)}>{children}</div>;
+  return <div className={cn('mb-4 sm:mb-5', className)}>{children}</div>;
 }
 
 export function CardTitle({ children, className }: CardProps) {
-  return <h3 className={cn('text-lg font-semibold text-zinc-900 dark:text-zinc-100', className)}>{children}</h3>;
+  return <h3 className={cn('text-lg font-semibold tracking-tight text-zinc-900 dark:text-zinc-100', className)}>{children}</h3>;
 }
 
 export function CardContent({ children, className }: CardProps) {

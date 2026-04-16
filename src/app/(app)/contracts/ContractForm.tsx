@@ -29,6 +29,7 @@ export function ContractForm({ categories, organizationId, userId, contract, use
   const orgDisplayName = useOrgDisplayName();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [showSecurityConfirm, setShowSecurityConfirm] = useState(false);
   const isManager = userRole === 'manager';
 
@@ -46,12 +47,22 @@ export function ContractForm({ categories, organizationId, userId, contract, use
     payment_interval: contract?.payment_interval ?? 'monthly',
     licenses_purchased: contract?.licenses_purchased ?? null,
     licenses_used: contract?.licenses_used ?? null,
+    license_type: contract?.license_type ?? null,
+    license_cost_per_unit: contract?.license_cost_per_unit ?? null,
     customer_number: contract?.customer_number ?? '',
     notes: contract?.notes ?? '',
     tax_rate: contract?.tax_rate ?? 19,
     is_gross: contract?.is_gross ?? true,
     max_renewals: contract?.max_renewals ?? null,
     document_url: contract?.document_url ?? '',
+    counterparty_name: contract?.counterparty_name ?? '',
+    counterparty_address: contract?.counterparty_address ?? '',
+    counterparty_zip: contract?.counterparty_zip ?? '',
+    counterparty_city: contract?.counterparty_city ?? '',
+    counterparty_country: contract?.counterparty_country ?? 'Deutschland',
+    counterparty_contact: contract?.counterparty_contact ?? '',
+    counterparty_email: contract?.counterparty_email ?? '',
+    counterparty_phone: contract?.counterparty_phone ?? '',
   });
 
   function updateField(field: string, value: unknown) {
@@ -60,6 +71,21 @@ export function ContractForm({ categories, organizationId, userId, contract, use
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    // Validation
+    const errors: Record<string, string> = {};
+    if (form.end_date && form.start_date && form.end_date < form.start_date) {
+      errors.end_date = t('validationEndBeforeStart');
+    }
+    if (form.licenses_purchased != null && form.licenses_used != null) {
+      const purchased = Number(form.licenses_purchased);
+      const used = Number(form.licenses_used);
+      if (purchased > 0 && used > purchased) {
+        errors.licenses_used = t('validationLicensesExceeded');
+      }
+    }
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
 
     // Manager editing existing contract → show security confirmation first
     if (isManager && contract && !showSecurityConfirm) {
@@ -89,12 +115,22 @@ export function ContractForm({ categories, organizationId, userId, contract, use
       payment_interval: form.payment_interval as Contract['payment_interval'],
       licenses_purchased: form.licenses_purchased ? Number(form.licenses_purchased) : null,
       licenses_used: form.licenses_used ? Number(form.licenses_used) : null,
+      license_type: form.license_type || null,
+      license_cost_per_unit: form.license_cost_per_unit ? Number(form.license_cost_per_unit) : null,
       customer_number: form.customer_number || null,
       notes: form.notes || null,
       tax_rate: Number(form.tax_rate),
       is_gross: form.is_gross,
       max_renewals: form.max_renewals ? Number(form.max_renewals) : null,
       document_url: form.document_url || null,
+      counterparty_name: form.counterparty_name || null,
+      counterparty_address: form.counterparty_address || null,
+      counterparty_zip: form.counterparty_zip || null,
+      counterparty_city: form.counterparty_city || null,
+      counterparty_country: form.counterparty_country || null,
+      counterparty_contact: form.counterparty_contact || null,
+      counterparty_email: form.counterparty_email || null,
+      counterparty_phone: form.counterparty_phone || null,
     };
 
     if (contract) {
@@ -207,6 +243,7 @@ export function ContractForm({ categories, organizationId, userId, contract, use
             <CardContent className="space-y-4">
               <Input id="start_date" label={t('startDate')} type="date" value={form.start_date} onChange={(e) => updateField('start_date', e.target.value)} required />
               <Input id="end_date" label={t('endDate')} type="date" value={form.end_date} onChange={(e) => updateField('end_date', e.target.value)} />
+              {fieldErrors.end_date && <p className="text-xs text-red-500">{fieldErrors.end_date}</p>}
               <Input id="cancellation_period" label={t('cancellationPeriod')} type="number" value={form.cancellation_period_days} onChange={(e) => updateField('cancellation_period_days', parseInt(e.target.value) || 0)} />
               <div className="flex items-center gap-2">
                 <input
@@ -288,7 +325,27 @@ export function ContractForm({ categories, organizationId, userId, contract, use
               )}
               <div className="grid grid-cols-2 gap-3">
                 <Input id="licenses_purchased" label={t('licensesPurchased')} type="number" value={form.licenses_purchased ?? ''} onChange={(e) => updateField('licenses_purchased', e.target.value || null)} />
-                <Input id="licenses_used" label={t('licensesUsed')} type="number" value={form.licenses_used ?? ''} onChange={(e) => updateField('licenses_used', e.target.value || null)} />
+                <div>
+                  <Input id="licenses_used" label={t('licensesUsed')} type="number" value={form.licenses_used ?? ''} onChange={(e) => updateField('licenses_used', e.target.value || null)} />
+                  {fieldErrors.licenses_used && <p className="text-xs text-red-500">{fieldErrors.licenses_used}</p>}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label htmlFor="license_type" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">{t('licenseType')}</label>
+                  <select
+                    id="license_type"
+                    value={form.license_type ?? ''}
+                    onChange={(e) => updateField('license_type', e.target.value || null)}
+                    className="block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                  >
+                    <option value="">-- {t('licenseType')} --</option>
+                    <option value="single">{t('licenseTypeSingle')}</option>
+                    <option value="bundle">{t('licenseTypeBundle')}</option>
+                    <option value="unlimited">{t('licenseTypeUnlimited')}</option>
+                  </select>
+                </div>
+                <Input id="license_cost_per_unit" label={t('licenseCostPerUnit')} type="number" step="0.01" value={form.license_cost_per_unit ?? ''} onChange={(e) => updateField('license_cost_per_unit', e.target.value || null)} />
               </div>
             </CardContent>
           </Card>
@@ -326,6 +383,25 @@ export function ContractForm({ categories, organizationId, userId, contract, use
               className="block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
               placeholder="Interne Notizen zum Vertrag..."
             />
+          </CardContent>
+        </Card>
+
+        {/* Counterparty */}
+        <Card className="mt-6">
+          <CardHeader><CardTitle>{t('counterparty')}</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <Input id="counterparty_name" label={t('counterpartyName')} value={form.counterparty_name} onChange={(e) => updateField('counterparty_name', e.target.value)} />
+            <Input id="counterparty_address" label={t('counterpartyAddress')} value={form.counterparty_address} onChange={(e) => updateField('counterparty_address', e.target.value)} />
+            <div className="grid grid-cols-2 gap-3">
+              <Input id="counterparty_zip" label={t('counterpartyZip')} value={form.counterparty_zip} onChange={(e) => updateField('counterparty_zip', e.target.value)} />
+              <Input id="counterparty_city" label={t('counterpartyCity')} value={form.counterparty_city} onChange={(e) => updateField('counterparty_city', e.target.value)} />
+            </div>
+            <Input id="counterparty_country" label={t('counterpartyCountry')} value={form.counterparty_country} onChange={(e) => updateField('counterparty_country', e.target.value)} />
+            <Input id="counterparty_contact" label={t('counterpartyContact')} value={form.counterparty_contact} onChange={(e) => updateField('counterparty_contact', e.target.value)} />
+            <div className="grid grid-cols-2 gap-3">
+              <Input id="counterparty_email" label={t('counterpartyEmail')} type="email" value={form.counterparty_email} onChange={(e) => updateField('counterparty_email', e.target.value)} />
+              <Input id="counterparty_phone" label={t('counterpartyPhone')} type="tel" value={form.counterparty_phone} onChange={(e) => updateField('counterparty_phone', e.target.value)} />
+            </div>
           </CardContent>
         </Card>
 

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Bell, User, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { PageHelpModal } from '@/components/ui/PageHelpModal';
@@ -35,21 +36,26 @@ interface TopBarProps {
 
 export function TopBar({ unreadCount }: TopBarProps) {
   const pathname = usePathname();
+  const tNav = useTranslations('nav');
+  const tHelp = useTranslations('help');
   const [helpOpen, setHelpOpen] = useState(false);
   const helpKey = getHelpKey(pathname);
 
   return (
     <>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1 rounded-xl border border-zinc-200 bg-white/80 px-1 py-1 shadow-sm backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/70">
         <button
           onClick={() => setHelpOpen(true)}
+          aria-label={tHelp('pageHelp')}
           className="rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200"
-          title="Hilfe"
+          title={tHelp('pageHelp')}
         >
           <HelpCircle className="h-5 w-5" />
         </button>
         <Link
           href="/notifications"
+          aria-label={tNav('notifications')}
+          title={tNav('notifications')}
           className={cn(
             'relative rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200',
             pathname === '/notifications' && 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200',
@@ -64,6 +70,8 @@ export function TopBar({ unreadCount }: TopBarProps) {
         </Link>
         <Link
           href="/profile"
+          aria-label={tNav('profile')}
+          title={tNav('profile')}
           className={cn(
             'rounded-lg p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-200',
             pathname === '/profile' && 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200',

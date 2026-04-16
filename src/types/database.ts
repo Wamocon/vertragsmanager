@@ -2,6 +2,7 @@ export type MemberRole = 'company_admin' | 'manager' | 'reader';
 export type ContractStatus = 'active' | 'expiring_soon' | 'expired' | 'cancelled';
 export type PaymentInterval = 'monthly' | 'quarterly' | 'yearly' | 'one_time';
 export type NotificationType = 'reminder' | 'invitation' | 'system' | 'comment' | 'edit';
+export type LicenseType = 'single' | 'bundle' | 'unlimited';
 
 export interface Organization {
   id: string;
@@ -61,6 +62,16 @@ export interface Contract {
   payment_interval: PaymentInterval;
   licenses_purchased: number | null;
   licenses_used: number | null;
+  license_type: LicenseType | null;
+  license_cost_per_unit: number | null;
+  counterparty_name: string | null;
+  counterparty_address: string | null;
+  counterparty_zip: string | null;
+  counterparty_city: string | null;
+  counterparty_country: string | null;
+  counterparty_contact: string | null;
+  counterparty_email: string | null;
+  counterparty_phone: string | null;
   status: ContractStatus;
   document_url: string | null;
   customer_number: string | null;

@@ -184,6 +184,53 @@ export function ContractDetail({ contract, reminders, categories, comments, orgM
           </CardContent>
         </Card>
 
+        {/* Counterparty Details */}
+        {(contract.counterparty_name || contract.counterparty_address || contract.counterparty_email) && (
+          <Card className="lg:col-span-2">
+            <CardHeader><CardTitle>{t('counterparty')}</CardTitle></CardHeader>
+            <CardContent>
+              <dl className="grid gap-3 text-sm sm:grid-cols-2 lg:grid-cols-4">
+                {contract.counterparty_name && (
+                  <div>
+                    <dt className="text-zinc-500">{t('counterpartyName')}</dt>
+                    <dd className="mt-0.5 font-medium text-zinc-900 dark:text-white">{contract.counterparty_name}</dd>
+                  </div>
+                )}
+                {contract.counterparty_contact && (
+                  <div>
+                    <dt className="text-zinc-500">{t('counterpartyContact')}</dt>
+                    <dd className="mt-0.5 text-zinc-900 dark:text-white">{contract.counterparty_contact}</dd>
+                  </div>
+                )}
+                {(contract.counterparty_address || contract.counterparty_zip || contract.counterparty_city) && (
+                  <div>
+                    <dt className="text-zinc-500">{t('counterpartyAddress')}</dt>
+                    <dd className="mt-0.5 text-zinc-900 dark:text-white">
+                      {contract.counterparty_address && <span>{contract.counterparty_address}<br /></span>}
+                      {(contract.counterparty_zip || contract.counterparty_city) && (
+                        <span>{contract.counterparty_zip} {contract.counterparty_city}</span>
+                      )}
+                      {contract.counterparty_country && contract.counterparty_country !== 'Deutschland' && (
+                        <span><br />{contract.counterparty_country}</span>
+                      )}
+                    </dd>
+                  </div>
+                )}
+                {(contract.counterparty_email || contract.counterparty_phone) && (
+                  <div>
+                    <dt className="text-zinc-500">{t('counterpartyEmail')} / {t('counterpartyPhone')}</dt>
+                    <dd className="mt-0.5 text-zinc-900 dark:text-white">
+                      {contract.counterparty_email && <a href={`mailto:${contract.counterparty_email}`} className="text-indigo-600 hover:underline dark:text-indigo-400">{contract.counterparty_email}</a>}
+                      {contract.counterparty_email && contract.counterparty_phone && <br />}
+                      {contract.counterparty_phone && <span>{contract.counterparty_phone}</span>}
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Financial & Dates */}
         <Card>
           <CardHeader><CardTitle>{t('durationCosts')}</CardTitle></CardHeader>

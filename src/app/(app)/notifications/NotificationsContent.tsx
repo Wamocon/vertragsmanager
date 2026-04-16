@@ -84,7 +84,7 @@ export function NotificationsContent({ notifications }: NotificationsContentProp
                 <div className="flex items-center gap-2">
                   {notification.link && (
                     <Link href={notification.link} className="text-sm text-indigo-600 hover:text-indigo-500">
-                      Anzeigen
+                      {t('open')}
                     </Link>
                   )}
                   {!notification.read && (

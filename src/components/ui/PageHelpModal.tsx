@@ -25,7 +25,7 @@ export function PageHelpModal({ open, onClose, helpKey }: PageHelpModalProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-end p-4 pt-16">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:items-start sm:justify-end sm:pt-16">
       <div className="fixed inset-0 bg-black/30" onClick={onClose} />
       <div
         role="dialog"
@@ -45,7 +45,7 @@ export function PageHelpModal({ open, onClose, helpKey }: PageHelpModalProps) {
             {t('pageHelp')}
           </h2>
         </div>
-        <p className="text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+        <p className="max-h-[50vh] overflow-y-auto pr-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
           {t(helpKey as Parameters<typeof t>[0])}
         </p>
       </div>

@@ -33,7 +33,19 @@ export default function LoginPage() {
       return;
     }
 
-    router.push('/dashboard');
+    // Check if user is superadmin → redirect to admin dashboard
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_superadmin')
+      .eq('id', user!.id)
+      .single();
+
+    if (profile?.is_superadmin) {
+      router.push('/admin');
+    } else {
+      router.push('/dashboard');
+    }
     router.refresh();
   }
 

@@ -1,12 +1,13 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/Card';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Breadcrumb } from '@/components/layout/Sidebar';
 import { useOrgDisplayName } from '@/lib/OrgContext';
+import { cn } from '@/lib/utils';
 import type { Contract, Category } from '@/types/database';
 import { Clock, AlertTriangle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -18,7 +19,8 @@ interface DeadlinesContentProps {
 export function DeadlinesContent({ contracts }: DeadlinesContentProps) {
   const t = useTranslations('deadlines');
   const orgDisplayName = useOrgDisplayName();
-  const today = new Date();
+  const today = useMemo(() => new Date(), []);
+  const [filter, setFilter] = useState<'all' | 'open' | 'past'>('all');
 
   const grouped = useMemo(() => {
     const now = today;
@@ -35,6 +37,11 @@ export function DeadlinesContent({ contracts }: DeadlinesContentProps) {
     for (const c of contracts) {
       if (!c.cancellation_deadline) continue;
       const d = new Date(c.cancellation_deadline);
+
+      // Apply filter
+      if (filter === 'open' && d < now) continue;
+      if (filter === 'past' && d >= now) continue;
+
       if (d < now) overdue.push(c);
       else if (d <= in7Days) thisWeek.push(c);
       else if (d <= in30Days) thisMonth.push(c);
@@ -42,7 +49,7 @@ export function DeadlinesContent({ contracts }: DeadlinesContentProps) {
     }
 
     return { overdue, thisWeek, thisMonth, later };
-  }, [contracts, today]);
+  }, [contracts, today, filter]);
 
   function handleIcsExport() {
     const lines = [
@@ -133,10 +140,28 @@ export function DeadlinesContent({ contracts }: DeadlinesContentProps) {
         </Button>
       </div>
 
+      {/* Filter */}
+      <div className="flex gap-1 rounded-lg border border-zinc-300 p-0.5 dark:border-zinc-700 w-fit">
+        {(['all', 'open', 'past'] as const).map((f) => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={cn(
+              'rounded-md px-3 py-1.5 text-sm font-medium transition-colors',
+              filter === f
+                ? 'bg-zinc-200 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-100'
+                : 'text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300',
+            )}
+          >
+            {t(`filter${f.charAt(0).toUpperCase() + f.slice(1)}` as Parameters<typeof t>[0])}
+          </button>
+        ))}
+      </div>
+
       {contracts.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-zinc-500">Keine anstehenden Fristen</p>
+            <p className="text-zinc-500">{t('noneUpcoming')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -144,7 +169,7 @@ export function DeadlinesContent({ contracts }: DeadlinesContentProps) {
           {renderGroup(t('overdue'), grouped.overdue, 'danger')}
           {renderGroup(t('thisWeek'), grouped.thisWeek, 'warning')}
           {renderGroup(t('thisMonth'), grouped.thisMonth, 'default')}
-          {renderGroup('Später', grouped.later, 'default')}
+          {renderGroup(t('later'), grouped.later, 'default')}
         </div>
       )}
     </div>

@@ -18,6 +18,7 @@ interface ProfileContentProps {
 
 export function ProfileContent({ profile, email }: ProfileContentProps) {
   const t = useTranslations('profile');
+  const tCommon = useTranslations('common');
   const router = useRouter();
   const orgDisplayName = useOrgDisplayName();
   const [fullName, setFullName] = useState(profile?.full_name ?? '');
@@ -36,7 +37,7 @@ export function ProfileContent({ profile, email }: ProfileContentProps) {
     if (error) {
       setMessage(error.message);
     } else {
-      setMessage('Gespeichert');
+      setMessage(t('saved'));
     }
     setSaving(false);
     router.refresh();
@@ -82,17 +83,17 @@ export function ProfileContent({ profile, email }: ProfileContentProps) {
         <CardHeader><CardTitle>{t('personalInfo')}</CardTitle></CardHeader>
         <CardContent>
           <form onSubmit={handleSave} className="space-y-4">
-            <Input id="email" label="E-Mail" value={email} disabled />
-            <Input id="fullName" label="Name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+            <Input id="email" label={t('emailLabel')} value={email} disabled />
+            <Input id="fullName" label={t('nameLabel')} value={fullName} onChange={(e) => setFullName(e.target.value)} />
             <Input id="companyName" label={t('company')} value={orgDisplayName} disabled />
             {message && <p className="text-sm text-emerald-600">{message}</p>}
-            <Button type="submit" disabled={saving}>{saving ? '...' : 'Speichern'}</Button>
+            <Button type="submit" disabled={saving}>{saving ? '...' : tCommon('save')}</Button>
           </form>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader><CardTitle>DSGVO-Rechte</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t('gdprTitle')}</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <Button variant="secondary" onClick={handleExportData}>{t('exportData')}</Button>
           <p className="text-xs text-zinc-500">{t('deleteWarning')}</p>

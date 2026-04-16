@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -9,6 +10,7 @@ import { useOrgDisplayName } from '@/lib/OrgContext';
 import type { Contract, Category, Notification, Profile, MemberRole } from '@/types/database';
 import { FileText, TrendingUp, Clock, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface DashboardContentProps {
   contracts: (Contract & { category: Category | null })[];
@@ -26,9 +28,32 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
   const t = useTranslations('dashboard');
   const orgDisplayName = useOrgDisplayName();
 
-  const activeContracts = contracts.filter((c) => c.status !== 'cancelled');
+  // Only count contracts that are active in the current month (exclude expired/cancelled)
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+  const activeContracts = contracts.filter((c) => {
+    if (c.status === 'cancelled' || c.status === 'expired') return false;
+    const startKey = c.start_date.substring(0, 7);
+    const endKey = c.end_date ? c.end_date.substring(0, 7) : '9999-12';
+    return startKey <= currentMonthKey && endKey >= currentMonthKey;
+  });
+
   const totalMonthly = activeContracts.reduce((sum, c) => sum + getMonthly(c), 0);
-  const totalYearly = totalMonthly * 12;
+
+  // Yearly: sum of actual monthly costs for each month of the current year
+  const currentYear = now.getFullYear();
+  let totalYearly = 0;
+  for (let m = 0; m < 12; m++) {
+    const mk = `${currentYear}-${String(m + 1).padStart(2, '0')}`;
+    for (const c of contracts) {
+      if (c.status === 'cancelled') continue;
+      const sk = c.start_date.substring(0, 7);
+      const ek = c.end_date ? c.end_date.substring(0, 7) : '9999-12';
+      if (sk <= mk && ek >= mk) totalYearly += computeMonthlyAmount(Number(c.amount), c.payment_interval);
+    }
+  }
+  totalYearly = Math.round(totalYearly * 100) / 100;
 
   const today = new Date();
   const in30Days = new Date(today);
@@ -64,6 +89,18 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
         {profile?.full_name && (
           <p className="mt-1 text-zinc-500 dark:text-zinc-400">{t('welcome')}, {profile.full_name}</p>
         )}
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        <Link href="/contracts/new" className="rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold text-zinc-800 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800">
+          {t('ctaNewContract')}
+        </Link>
+        <Link href="/deadlines" className="rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold text-zinc-800 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800">
+          {t('ctaDeadlines')}
+        </Link>
+        <Link href="/analytics" className="rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold text-zinc-800 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800">
+          {t('ctaAnalytics')}
+        </Link>
       </div>
 
       {/* KPI Cards */}
@@ -125,6 +162,9 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
         </Link>
       </div>
 
+      {/* Monthly Cost Trend */}
+      <MonthlyTrendChart contracts={contracts} currentYear={currentYear} />
+
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Cost by Category */}
         <Card>
@@ -145,7 +185,7 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
                 ))}
                 <div className="border-t border-zinc-200 pt-2 dark:border-zinc-800">
                   <div className="flex items-center justify-between font-medium">
-                    <span className="text-sm text-zinc-900 dark:text-white">Gesamt</span>
+                    <span className="text-sm text-zinc-900 dark:text-white">{t('totalLabel')}</span>
                     <span className="text-sm text-zinc-900 dark:text-white">{formatCurrency(totalMonthly)}/Mo</span>
                   </div>
                 </div>
@@ -161,7 +201,7 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
           </CardHeader>
           <CardContent>
             {expiringContracts.length === 0 ? (
-              <p className="text-sm text-zinc-500">Keine ablaufenden Verträge in den nächsten 30 Tagen</p>
+              <p className="text-sm text-zinc-500">{t('noExpiringContracts')}</p>
             ) : (
               <div className="space-y-3">
                 {expiringContracts.map((contract) => {
@@ -200,7 +240,7 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>{t('recentContracts')}</CardTitle>
           <Link href="/contracts" className="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
-            Alle anzeigen →
+            {t('showAll')} →
           </Link>
         </CardHeader>
         <CardContent>
@@ -242,5 +282,74 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function MonthlyTrendChart({ contracts, currentYear }: { contracts: (Contract & { category: Category | null })[]; currentYear: number }) {
+  const t = useTranslations('dashboard');
+
+  const chartData = useMemo(() => {
+    const data: { month: string; total: number }[] = [];
+    for (let m = 0; m < 12; m++) {
+      const mk = `${currentYear}-${String(m + 1).padStart(2, '0')}`;
+      let monthTotal = 0;
+      for (const c of contracts) {
+        if (c.status === 'cancelled') continue;
+        const sk = c.start_date.substring(0, 7);
+        const ek = c.end_date ? c.end_date.substring(0, 7) : '9999-12';
+        if (sk <= mk && ek >= mk) {
+          monthTotal += computeMonthlyAmount(Number(c.amount), c.payment_interval);
+        }
+      }
+      data.push({
+        month: new Date(currentYear, m).toLocaleDateString('de-DE', { month: 'short' }),
+        total: Math.round(monthTotal * 100) / 100,
+      });
+    }
+    return data;
+  }, [contracts, currentYear]);
+
+  if (contracts.length === 0) return null;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <TrendingUp className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+          {t('monthlyCostTrend')}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div style={{ height: 260 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={chartData} margin={{ top: 5, right: 20, bottom: 5, left: 20 }}>
+              <defs>
+                <linearGradient id="dashTrendGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-zinc-200 dark:stroke-zinc-700" />
+              <XAxis dataKey="month" tick={{ fontSize: 11 }} className="text-zinc-500" />
+              <YAxis
+                tick={{ fontSize: 11 }}
+                tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+                className="text-zinc-500"
+                width={60}
+              />
+              <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+              <Area
+                type="monotone"
+                dataKey="total"
+                name={t('monthlyCosts')}
+                stroke="#06b6d4"
+                strokeWidth={2}
+                fill="url(#dashTrendGrad)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

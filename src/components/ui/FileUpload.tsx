@@ -81,6 +81,7 @@ export function FileUpload({
                 width={variant === 'avatar' ? 80 : 64}
                 height={variant === 'avatar' ? 80 : 64}
                 className={cn(size, 'rounded-lg object-cover border border-zinc-200 dark:border-zinc-700')}
+                unoptimized
               />
               {onRemove && (
                 <button

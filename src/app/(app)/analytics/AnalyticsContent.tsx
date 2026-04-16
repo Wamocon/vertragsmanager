@@ -3,14 +3,15 @@
 import { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Breadcrumb } from '@/components/layout/Sidebar';
 import { formatCurrency, computeMonthlyAmount, netToGross, grossToNet } from '@/lib/format';
 import { useOrgDisplayName } from '@/lib/OrgContext';
 import { cn } from '@/lib/utils';
 import type { Contract, Category, ContractStatus } from '@/types/database';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { BarChart3, Table2, X } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { BarChart3, Table2, X, Maximize2 } from 'lucide-react';
 
 interface AnalyticsContentProps {
   contracts: (Contract & { category: Category | null })[];
@@ -41,8 +42,10 @@ export function AnalyticsContent({ contracts, categories }: AnalyticsContentProp
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 
   // Table filters — default to current calendar year up to today
+  const [currentYear] = useState(() => new Date().getFullYear());
+  const [currentMonth] = useState(() => new Date().getMonth());
   const now = new Date();
-  const yearStart = `${now.getFullYear()}-01-01`;
+  const yearStart = `${currentYear}-01-01`;
   const todayStr = now.toISOString().split('T')[0];
   const [tableProvider, setTableProvider] = useState('all');
   const [tableCategory, setTableCategory] = useState('all');
@@ -51,30 +54,59 @@ export function AnalyticsContent({ contracts, categories }: AnalyticsContentProp
   const [tableDateFrom, setTableDateFrom] = useState(yearStart);
   const [tableDateTo, setTableDateTo] = useState(todayStr);
 
-  const currentMonthName = now.toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+  // Cumulative chart state — simplified for inline preview
+  const [cumulativeCategory, setCumulativeCategory] = useState('all');
+
+  const currentMonthName = new Date(currentYear, currentMonth).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+  const currentMonthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
 
   const uniqueProviders = useMemo(() =>
     [...new Set(contracts.map((c) => c.provider))].sort(),
     [contracts]
   );
 
-  const totalMonthly = contracts.reduce((sum, c) => sum + getMonthly(c), 0);
-  const totalYearly = totalMonthly * 12;
+  // Only count contracts active in the current month for KPIs
+  const activeContracts = useMemo(() =>
+    contracts.filter((c) => {
+      if (c.status === 'cancelled' || c.status === 'expired') return false;
+      const startKey = c.start_date.substring(0, 7);
+      const endKey = c.end_date ? c.end_date.substring(0, 7) : '9999-12';
+      return startKey <= currentMonthKey && endKey >= currentMonthKey;
+    }),
+    [contracts, currentMonthKey]
+  );
+
+  const totalMonthly = activeContracts.reduce((sum, c) => sum + getMonthly(c), 0);
+
+  // Yearly: sum of actual monthly costs for each month of the current year
+  const totalYearly = useMemo(() => {
+    let sum = 0;
+    for (let m = 0; m < 12; m++) {
+      const mk = `${currentYear}-${String(m + 1).padStart(2, '0')}`;
+      for (const c of contracts) {
+        if (c.status === 'cancelled') continue;
+        const sk = c.start_date.substring(0, 7);
+        const ek = c.end_date ? c.end_date.substring(0, 7) : '9999-12';
+        if (sk <= mk && ek >= mk) sum += computeMonthlyAmount(Number(c.amount), c.payment_interval);
+      }
+    }
+    return Math.round(sum * 100) / 100;
+  }, [contracts, currentYear]);
 
   const categoryData = useMemo(() => {
     return categories
       .map((cat) => {
-        const catContracts = contracts.filter((c) => c.category_id === cat.id);
+        const catContracts = activeContracts.filter((c) => c.category_id === cat.id);
         const total = catContracts.reduce((sum, c) => sum + getMonthly(c), 0);
         return { name: cat.name, value: Math.round(total * 100) / 100, color: cat.color, count: catContracts.length };
       })
       .filter((c) => c.value > 0)
       .sort((a, b) => b.value - a.value);
-  }, [contracts, categories]);
+  }, [activeContracts, categories]);
 
   const topProviders = useMemo(() => {
     const providerMap = new Map<string, number>();
-    for (const c of contracts) {
+    for (const c of activeContracts) {
       const monthly = getMonthly(c);
       providerMap.set(c.provider, (providerMap.get(c.provider) ?? 0) + monthly);
     }
@@ -82,7 +114,7 @@ export function AnalyticsContent({ contracts, categories }: AnalyticsContentProp
       .map(([name, total]) => ({ name, total }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 10);
-  }, [contracts]);
+  }, [activeContracts]);
 
   // Payment calendar: 12 months for selected year
   const paymentCalendar = useMemo(() => {
@@ -90,10 +122,82 @@ export function AnalyticsContent({ contracts, categories }: AnalyticsContentProp
     for (let i = 0; i < 12; i++) {
       const date = new Date(selectedYear, i, 1);
       const monthStr = date.toLocaleDateString('de-DE', { month: 'short', year: 'numeric' });
-      months.push({ month: monthStr, monthIndex: i, total: totalMonthly });
+      const mk = `${selectedYear}-${String(i + 1).padStart(2, '0')}`;
+      let monthTotal = 0;
+      for (const c of contracts) {
+        if (c.status === 'cancelled') continue;
+        const sk = c.start_date.substring(0, 7);
+        const ek = c.end_date ? c.end_date.substring(0, 7) : '9999-12';
+        if (sk <= mk && ek >= mk) monthTotal += computeMonthlyAmount(Number(c.amount), c.payment_interval);
+      }
+      months.push({ month: monthStr, monthIndex: i, total: Math.round(monthTotal * 100) / 100 });
     }
     return months;
-  }, [totalMonthly, selectedYear]);
+  }, [contracts, selectedYear]);
+
+  // Cumulative cost data: per-category colored series for inline preview
+  const cumulativeData = useMemo(() => {
+    const filtered = cumulativeCategory === 'all'
+      ? contracts
+      : contracts.filter((c) => c.category_id === cumulativeCategory);
+
+    if (filtered.length === 0) return [];
+
+    const earliest = filtered.reduce((min, c) => c.start_date < min ? c.start_date : min, filtered[0].start_date);
+    const startDate = new Date(earliest);
+    startDate.setDate(1);
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + 12);
+
+    const data: { month: string; cumulative: number }[] = [];
+    let cumulative = 0;
+    const cursor = new Date(startDate);
+
+    while (cursor <= endDate) {
+      const cursorKey = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}`;
+      let monthTotal = 0;
+      for (const c of filtered) {
+        if (c.status === 'cancelled') continue;
+        const startKey = c.start_date.substring(0, 7);
+        const endKey = c.end_date ? c.end_date.substring(0, 7) : '9999-12';
+        if (startKey > cursorKey || endKey < cursorKey) continue;
+        monthTotal += computeMonthlyAmount(Number(c.amount), c.payment_interval);
+      }
+      cumulative += monthTotal;
+      data.push({
+        month: cursor.toLocaleDateString('de-DE', { month: 'short', year: '2-digit' }),
+        cumulative: Math.round(cumulative * 100) / 100,
+      });
+      cursor.setMonth(cursor.getMonth() + 1);
+    }
+    return data;
+  }, [contracts, cumulativeCategory]);
+
+  // Monthly trend preview: last 12 months of non-cumulative cost
+  const monthlyTrendData = useMemo(() => {
+    const now = new Date();
+    const startDate = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+    const data: { month: string; total: number }[] = [];
+    const cursor = new Date(startDate);
+
+    while (cursor <= now) {
+      const cursorKey = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}`;
+      let monthTotal = 0;
+      for (const c of contracts) {
+        if (c.status === 'cancelled') continue;
+        const startKey = c.start_date.substring(0, 7);
+        const endKey = c.end_date ? c.end_date.substring(0, 7) : '9999-12';
+        if (startKey > cursorKey || endKey < cursorKey) continue;
+        monthTotal += computeMonthlyAmount(Number(c.amount), c.payment_interval);
+      }
+      data.push({
+        month: cursor.toLocaleDateString('de-DE', { month: 'short', year: '2-digit' }),
+        total: Math.round(monthTotal * 100) / 100,
+      });
+      cursor.setMonth(cursor.getMonth() + 1);
+    }
+    return data;
+  }, [contracts]);
 
   function handleCsvExport() {
     const headers = ['Name', 'Anbieter', 'Kategorie', 'Betrag', 'Intervall', 'Monatlich', 'Status', 'Vertragsbeginn', 'Vertragsende', 'Kündigungsfrist'];
@@ -119,7 +223,6 @@ export function AnalyticsContent({ contracts, categories }: AnalyticsContentProp
     URL.revokeObjectURL(url);
   }
 
-  const currentYear = new Date().getFullYear();
   const yearOptions = [currentYear - 1, currentYear, currentYear + 1];
 
   return (
@@ -158,7 +261,7 @@ export function AnalyticsContent({ contracts, categories }: AnalyticsContentProp
           <CardContent>
             <p className="text-sm text-zinc-500">{t('totalYearly')}</p>
             <p className="mt-1 text-3xl font-bold text-zinc-900 dark:text-white">{formatCurrency(totalYearly)}</p>
-            <p className="mt-0.5 text-xs text-zinc-400">{now.getFullYear()}</p>
+            <p className="mt-0.5 text-xs text-zinc-400">{currentYear}</p>
           </CardContent>
         </Card>
       </div>
@@ -227,6 +330,123 @@ export function AnalyticsContent({ contracts, categories }: AnalyticsContentProp
               </CardContent>
             </Card>
           </div>
+
+          {/* Cumulative Cost Chart — Preview with link to full page */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div className="flex items-center gap-3">
+                <CardTitle>{t('cumulativeCosts')}</CardTitle>
+                <select
+                  value={cumulativeCategory}
+                  onChange={(e) => setCumulativeCategory(e.target.value)}
+                  className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                >
+                  <option value="all">{t('allCategories')}</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+              <Link
+                href="/analytics/cumulative"
+                className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20"
+                title={t('openFullPage')}
+              >
+                <Maximize2 className="h-4 w-4" />
+                {t('openFullPage')}
+              </Link>
+            </CardHeader>
+            <CardContent>
+              {cumulativeData.length === 0 ? (
+                <p className="text-sm text-zinc-500">{t('noData')}</p>
+              ) : (
+                <div style={{ height: 300 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={cumulativeData} margin={{ top: 5, right: 20, bottom: 5, left: 20 }}>
+                      <defs>
+                        <linearGradient id="cumulativeGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-zinc-200 dark:stroke-zinc-700" />
+                      <XAxis
+                        dataKey="month"
+                        tick={{ fontSize: 11 }}
+                        interval={Math.max(0, Math.floor(cumulativeData.length / 12) - 1)}
+                        className="text-zinc-500"
+                      />
+                      <YAxis
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+                        className="text-zinc-500"
+                        width={60}
+                      />
+                      <Tooltip formatter={(value) => formatCurrency(Number(value))} labelFormatter={(label) => String(label)} />
+                      <Area
+                        type="monotone"
+                        dataKey="cumulative"
+                        name={t('cumulativeTotal')}
+                        stroke="#6366f1"
+                        strokeWidth={2}
+                        fill="url(#cumulativeGradient)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Monthly Trend Chart — Preview with link to full page */}
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>{t('monthlyTrend')}</CardTitle>
+              <Link
+                href="/analytics/monthly-trend"
+                className="flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium text-indigo-600 transition-colors hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20"
+                title={t('openFullPage')}
+              >
+                <Maximize2 className="h-4 w-4" />
+                {t('openFullPage')}
+              </Link>
+            </CardHeader>
+            <CardContent>
+              {monthlyTrendData.length === 0 ? (
+                <p className="text-sm text-zinc-500">{t('noData')}</p>
+              ) : (
+                <div style={{ height: 300 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={monthlyTrendData} margin={{ top: 5, right: 20, bottom: 5, left: 20 }}>
+                      <defs>
+                        <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-zinc-200 dark:stroke-zinc-700" />
+                      <XAxis dataKey="month" tick={{ fontSize: 11 }} className="text-zinc-500" />
+                      <YAxis
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(v: number) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : String(v)}
+                        className="text-zinc-500"
+                        width={60}
+                      />
+                      <Tooltip formatter={(value) => formatCurrency(Number(value))} labelFormatter={(label) => String(label)} />
+                      <Area
+                        type="monotone"
+                        dataKey="total"
+                        name={t('monthlyTotal')}
+                        stroke="#06b6d4"
+                        strokeWidth={2}
+                        fill="url(#trendGradient)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Payment Calendar */}
           <Card>
@@ -306,19 +526,33 @@ export function AnalyticsContent({ contracts, categories }: AnalyticsContentProp
                   <h4 className="mb-3 text-sm font-medium text-zinc-700 dark:text-zinc-300">
                     {new Date(selectedYear, selectedMonth).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })}
                   </h4>
-                  <p className="text-2xl font-bold text-zinc-900 dark:text-white">{formatCurrency(totalMonthly)}</p>
-                  <p className="mt-1 text-xs text-zinc-500">Geschätzte Kosten für diesen Monat</p>
-                  <div className="mt-4 space-y-2">
-                    {contracts.filter((c) => c.status !== 'cancelled').map((c) => (
-                      <div key={c.id} className="flex items-center justify-between text-sm">
-                        <div>
-                          <span className="text-zinc-900 dark:text-white">{c.name}</span>
-                          <span className="ml-2 text-zinc-500">{c.provider}</span>
+                  {(() => {
+                    const mk = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
+                    const monthContracts = contracts.filter((c) => {
+                      if (c.status === 'cancelled') return false;
+                      const sk = c.start_date.substring(0, 7);
+                      const ek = c.end_date ? c.end_date.substring(0, 7) : '9999-12';
+                      return sk <= mk && ek >= mk;
+                    });
+                    const monthSum = monthContracts.reduce((s, c) => s + getMonthly(c), 0);
+                    return (
+                      <>
+                        <p className="text-2xl font-bold text-zinc-900 dark:text-white">{formatCurrency(monthSum)}</p>
+                        <p className="mt-1 text-xs text-zinc-500">{t('estimatedCosts')}</p>
+                        <div className="mt-4 space-y-2">
+                          {monthContracts.map((c) => (
+                            <div key={c.id} className="flex items-center justify-between text-sm">
+                              <div>
+                                <span className="text-zinc-900 dark:text-white">{c.name}</span>
+                                <span className="ml-2 text-zinc-500">{c.provider}</span>
+                              </div>
+                              <span className="font-medium text-zinc-900 dark:text-white">{formatCurrency(getMonthly(c))}</span>
+                            </div>
+                          ))}
                         </div>
-                        <span className="font-medium text-zinc-900 dark:text-white">{formatCurrency(getMonthly(c))}</span>
-                      </div>
-                    ))}
-                  </div>
+                      </>
+                    );
+                  })()}
                 </div>
               )}
             </CardContent>

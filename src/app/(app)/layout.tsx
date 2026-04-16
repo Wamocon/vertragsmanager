@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { TopBar } from '@/components/layout/TopBar';
+import { RouteGuidance } from '@/components/layout/RouteGuidance';
 import { OrgProvider } from '@/lib/OrgContext';
 
 export default async function AppLayout({
@@ -14,6 +15,17 @@ export default async function AppLayout({
 
   if (!user) {
     redirect('/login');
+  }
+
+  // Superadmin should use the /admin area exclusively
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('is_superadmin')
+    .eq('id', user.id)
+    .single();
+
+  if (profile?.is_superadmin) {
+    redirect('/admin');
   }
 
   // Get unread notification count
@@ -53,15 +65,16 @@ export default async function AppLayout({
         organizationLogoUrl={orgLogoUrl}
       />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-12 flex-shrink-0 items-center justify-end border-b border-zinc-200 px-4 dark:border-zinc-800 lg:px-8">
+        <header className="flex h-14 flex-shrink-0 items-center justify-end border-b border-zinc-200 bg-white/70 px-4 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/60 lg:px-8">
           <TopBar unreadCount={count ?? 0} />
         </header>
-        <main className="flex-1 overflow-y-auto px-4 py-6 lg:px-8">
+        <main className="flex-1 overflow-y-auto px-4 py-5 lg:px-8 lg:py-6">
           <OrgProvider
             organizationName={orgName ?? ''}
             organizationShortName={orgShortName}
           >
             <div className="mx-auto max-w-7xl">
+              <RouteGuidance />
               {children}
             </div>
           </OrgProvider>
