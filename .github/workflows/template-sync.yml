@@ -1,0 +1,17 @@
+name: Sync with Template
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Führt den Workflow jeden Montag um 06:00 Uhr aus
+    - cron: "0 6 * * 1"
+
+jobs:
+  call-sync:
+    # Verhindert, dass der Workflow in der Template-Repository selbst ausgeführt wird
+    if: github.repository != 'Wamocon/template_repo'
+    uses: Wamocon/github_workflow/.github/workflows/template-sync.yml@main
+    with:
+      # Passe den Namen an, falls dein Template anders heißt
+      source_repo: "Wamocon/template_repo"
+    secrets: inherit
