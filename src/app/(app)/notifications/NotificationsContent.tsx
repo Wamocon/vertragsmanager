@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Breadcrumb } from '@/components/layout/Sidebar';
+import { useOrgDisplayName } from '@/lib/OrgContext';
 import type { Notification } from '@/types/database';
 import { Bell, CheckCheck } from 'lucide-react';
 import Link from 'next/link';
@@ -17,6 +18,7 @@ interface NotificationsContentProps {
 export function NotificationsContent({ notifications }: NotificationsContentProps) {
   const t = useTranslations('notifications');
   const router = useRouter();
+  const orgDisplayName = useOrgDisplayName();
 
   async function markAsRead(id: string) {
     const supabase = createClient();
@@ -37,7 +39,7 @@ export function NotificationsContent({ notifications }: NotificationsContentProp
 
   return (
     <div className="space-y-6">
-      <Breadcrumb items={[{ label: 'Dashboard', href: '/dashboard' }, { label: t('title') }]} />
+      <Breadcrumb items={[{ label: orgDisplayName, href: '/dashboard' }, { label: t('title') }]} />
 
       <div className="flex items-center justify-between">
         <div>

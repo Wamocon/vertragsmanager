@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/Button';
 import { Card, CardContent } from '@/components/ui/Card';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Breadcrumb } from '@/components/layout/Sidebar';
+import { formatCurrency, computeMonthlyAmount } from '@/lib/format';
+import { useOrgDisplayName } from '@/lib/OrgContext';
 import type { Contract, Category, MemberRole } from '@/types/database';
 import { Plus, LayoutGrid, List, Search } from 'lucide-react';
 
@@ -17,22 +19,17 @@ interface ContractsContentProps {
   userRole: MemberRole;
 }
 
-function computeMonthlyAmount(contract: Contract): number {
-  switch (contract.payment_interval) {
-    case 'monthly': return Number(contract.amount);
-    case 'quarterly': return Number(contract.amount) / 3;
-    case 'yearly': return Number(contract.amount) / 12;
-    case 'one_time': return 0;
-    default: return 0;
-  }
+function getMonthly(contract: Contract): number {
+  return computeMonthlyAmount(Number(contract.amount), contract.payment_interval);
 }
 
 export function ContractsContent({ contracts, categories, userRole }: ContractsContentProps) {
   const t = useTranslations('contracts');
+  const orgDisplayName = useOrgDisplayName();
   const [view, setView] = useState<'cards' | 'list'>('cards');
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('active_only');
   const [sortBy, setSortBy] = useState<'name' | 'cost' | 'deadline' | 'provider'>('name');
 
   const canEdit = userRole === 'company_admin' || userRole === 'manager';
@@ -57,14 +54,16 @@ export function ContractsContent({ contracts, categories, userRole }: ContractsC
     }
 
     // Status filter
-    if (statusFilter !== 'all') {
+    if (statusFilter === 'active_only') {
+      result = result.filter((c) => c.status !== 'expired' && c.status !== 'cancelled');
+    } else if (statusFilter !== 'all') {
       result = result.filter((c) => c.status === statusFilter);
     }
 
     // Sort
     result.sort((a, b) => {
       switch (sortBy) {
-        case 'cost': return computeMonthlyAmount(b) - computeMonthlyAmount(a);
+        case 'cost': return getMonthly(b) - getMonthly(a);
         case 'deadline': {
           const da = a.cancellation_deadline ? new Date(a.cancellation_deadline).getTime() : Infinity;
           const db = b.cancellation_deadline ? new Date(b.cancellation_deadline).getTime() : Infinity;
@@ -80,7 +79,7 @@ export function ContractsContent({ contracts, categories, userRole }: ContractsC
 
   return (
     <div className="space-y-6">
-      <Breadcrumb items={[{ label: 'Dashboard', href: '/dashboard' }, { label: t('title') }]} />
+      <Breadcrumb items={[{ label: orgDisplayName, href: '/dashboard' }, { label: t('title') }]} />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">{t('title')}</h1>
@@ -123,6 +122,7 @@ export function ContractsContent({ contracts, categories, userRole }: ContractsC
           onChange={(e) => setStatusFilter(e.target.value)}
           className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
         >
+          <option value="active_only">Aktive Verträge</option>
           <option value="all">{t('allStatuses')}</option>
           <option value="active">{t('statusActive')}</option>
           <option value="expiring_soon">{t('statusExpiringSoon')}</option>
@@ -178,7 +178,7 @@ export function ContractsContent({ contracts, categories, userRole }: ContractsC
                   <div className="mt-4 flex items-end justify-between">
                     <div>
                       <p className="text-2xl font-bold text-zinc-900 dark:text-white">
-                        €{computeMonthlyAmount(contract).toFixed(2)}
+                        {formatCurrency(getMonthly(contract))}
                       </p>
                       <p className="text-xs text-zinc-500">{t('perMonth')}</p>
                     </div>
@@ -228,7 +228,7 @@ export function ContractsContent({ contracts, categories, userRole }: ContractsC
                           </span>
                         )}
                       </td>
-                      <td className="py-3 font-medium text-zinc-900 dark:text-white">€{computeMonthlyAmount(contract).toFixed(2)}</td>
+                      <td className="py-3 font-medium text-zinc-900 dark:text-white">{formatCurrency(getMonthly(contract))}</td>
                       <td className="py-3 text-zinc-600 dark:text-zinc-400">
                         {contract.cancellation_deadline ? new Date(contract.cancellation_deadline).toLocaleDateString('de-DE') : '-'}
                       </td>

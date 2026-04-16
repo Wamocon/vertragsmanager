@@ -42,12 +42,19 @@ export default async function ContractDetailPage({ params }: { params: Promise<{
     .eq('contract_id', id)
     .order('created_at', { ascending: true });
 
+  // Fetch org members for role badges on comments
+  const { data: orgMembers } = await supabase
+    .from('organization_members')
+    .select('user_id, role')
+    .eq('organization_id', membership.organization_id);
+
   return (
     <ContractDetail
       contract={contract}
       reminders={reminders ?? []}
       categories={categories ?? []}
       comments={comments ?? []}
+      orgMembers={orgMembers ?? []}
       userRole={membership.role}
       userId={user.id}
       organizationId={membership.organization_id}

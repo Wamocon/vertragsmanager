@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Breadcrumb } from '@/components/layout/Sidebar';
+import { useOrgDisplayName } from '@/lib/OrgContext';
 import type { Profile } from '@/types/database';
 
 interface ProfileContentProps {
@@ -18,8 +19,8 @@ interface ProfileContentProps {
 export function ProfileContent({ profile, email }: ProfileContentProps) {
   const t = useTranslations('profile');
   const router = useRouter();
+  const orgDisplayName = useOrgDisplayName();
   const [fullName, setFullName] = useState(profile?.full_name ?? '');
-  const [companyName, setCompanyName] = useState(profile?.company_name ?? '');
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -29,7 +30,7 @@ export function ProfileContent({ profile, email }: ProfileContentProps) {
     const supabase = createClient();
     const { error } = await supabase
       .from('profiles')
-      .update({ full_name: fullName, company_name: companyName })
+      .update({ full_name: fullName })
       .eq('id', profile?.id ?? '');
 
     if (error) {
@@ -74,7 +75,7 @@ export function ProfileContent({ profile, email }: ProfileContentProps) {
 
   return (
     <div className="space-y-6">
-      <Breadcrumb items={[{ label: 'Dashboard', href: '/dashboard' }, { label: t('title') }]} />
+      <Breadcrumb items={[{ label: orgDisplayName, href: '/dashboard' }, { label: t('title') }]} />
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">{t('title')}</h1>
 
       <Card>
@@ -83,7 +84,7 @@ export function ProfileContent({ profile, email }: ProfileContentProps) {
           <form onSubmit={handleSave} className="space-y-4">
             <Input id="email" label="E-Mail" value={email} disabled />
             <Input id="fullName" label="Name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-            <Input id="companyName" label="Unternehmen" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+            <Input id="companyName" label={t('company')} value={orgDisplayName} disabled />
             {message && <p className="text-sm text-emerald-600">{message}</p>}
             <Button type="submit" disabled={saving}>{saving ? '...' : 'Speichern'}</Button>
           </form>

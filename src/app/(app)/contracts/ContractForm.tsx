@@ -4,10 +4,15 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Breadcrumb } from '@/components/layout/Sidebar';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { FileUpload } from '@/components/ui/FileUpload';
+import { formatCurrency, netToGross, grossToNet } from '@/lib/format';
+import { useOrgDisplayName } from '@/lib/OrgContext';
 import type { Category, Contract, MemberRole } from '@/types/database';
 
 interface ContractFormProps {
@@ -21,6 +26,7 @@ interface ContractFormProps {
 export function ContractForm({ categories, organizationId, userId, contract, userRole }: ContractFormProps) {
   const t = useTranslations('contracts');
   const router = useRouter();
+  const orgDisplayName = useOrgDisplayName();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showSecurityConfirm, setShowSecurityConfirm] = useState(false);
@@ -42,6 +48,10 @@ export function ContractForm({ categories, organizationId, userId, contract, use
     licenses_used: contract?.licenses_used ?? null,
     customer_number: contract?.customer_number ?? '',
     notes: contract?.notes ?? '',
+    tax_rate: contract?.tax_rate ?? 19,
+    is_gross: contract?.is_gross ?? true,
+    max_renewals: contract?.max_renewals ?? null,
+    document_url: contract?.document_url ?? '',
   });
 
   function updateField(field: string, value: unknown) {
@@ -81,6 +91,10 @@ export function ContractForm({ categories, organizationId, userId, contract, use
       licenses_used: form.licenses_used ? Number(form.licenses_used) : null,
       customer_number: form.customer_number || null,
       notes: form.notes || null,
+      tax_rate: Number(form.tax_rate),
+      is_gross: form.is_gross,
+      max_renewals: form.max_renewals ? Number(form.max_renewals) : null,
+      document_url: form.document_url || null,
     };
 
     if (contract) {
@@ -121,7 +135,7 @@ export function ContractForm({ categories, organizationId, userId, contract, use
   return (
     <div className="space-y-6">
       <Breadcrumb items={[
-        { label: 'Dashboard', href: '/dashboard' },
+        { label: orgDisplayName, href: '/dashboard' },
         { label: t('title'), href: '/contracts' },
         { label: isEdit ? t('editContract') : t('addContract') },
       ]} />
@@ -137,19 +151,20 @@ export function ContractForm({ categories, organizationId, userId, contract, use
           </div>
         )}
 
-        {showSecurityConfirm && (
-          <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 p-4 dark:border-amber-700 dark:bg-amber-900/20">
-            <p className="mb-2 font-medium text-amber-800 dark:text-amber-300">Sicherheitshinweis</p>
-            <p className="mb-3 text-sm text-amber-700 dark:text-amber-400">
-              Änderungen an Vertragsdaten werden protokolliert und der Unternehmensadmin wird benachrichtigt.
-              Bitte bestätigen Sie, dass die Änderungen korrekt sind.
-            </p>
-            <div className="flex gap-2">
-              <Button type="submit" size="sm">Änderungen bestätigen</Button>
-              <Button type="button" variant="secondary" size="sm" onClick={() => setShowSecurityConfirm(false)}>Abbrechen</Button>
-            </div>
-          </div>
-        )}
+        <ConfirmDialog
+          open={showSecurityConfirm}
+          title="Sicherheitshinweis"
+          message="Änderungen an Vertragsdaten werden protokolliert und der Unternehmensadmin wird benachrichtigt. Bitte bestätigen Sie, dass die Änderungen korrekt sind."
+          variant="warning"
+          confirmLabel="Änderungen bestätigen"
+          cancelLabel={t('cancel') ?? 'Abbrechen'}
+          onConfirm={() => {
+            setShowSecurityConfirm(false);
+            const fakeEvent = { preventDefault: () => {} } as React.FormEvent;
+            handleSubmit(fakeEvent);
+          }}
+          onCancel={() => setShowSecurityConfirm(false)}
+        />
 
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Basic Info */}
@@ -204,7 +219,7 @@ export function ContractForm({ categories, organizationId, userId, contract, use
                 <label htmlFor="auto_renew" className="text-sm text-zinc-700 dark:text-zinc-300">{t('autoRenew')}</label>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <Input id="amount" label={t('amount')} type="number" step="0.01" value={form.amount} onChange={(e) => updateField('amount', e.target.value)} required />
+                <Input id="amount" label={`${t('amount')} (${form.is_gross ? 'Brutto' : 'Netto'})`} type="number" step="0.01" value={form.amount} onChange={(e) => updateField('amount', e.target.value)} required />
                 <div className="space-y-1">
                   <label htmlFor="interval" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">{t('paymentInterval')}</label>
                   <select
@@ -220,6 +235,57 @@ export function ContractForm({ categories, organizationId, userId, contract, use
                   </select>
                 </div>
               </div>
+              {/* Tax / Brutto-Netto */}
+              <div className="grid grid-cols-2 gap-3">
+                <Input id="tax_rate" label={t('taxRate')} type="number" step="0.01" value={form.tax_rate} onChange={(e) => updateField('tax_rate', parseFloat(e.target.value) || 0)} />
+                <div className="space-y-1">
+                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">{t('amountType')}</label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => updateField('is_gross', true)}
+                      className={cn(
+                        'flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+                        form.is_gross
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-700 dark:border-indigo-500 dark:bg-indigo-900/20 dark:text-indigo-400'
+                          : 'border-zinc-300 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800',
+                      )}
+                    >
+                      {t('gross')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => updateField('is_gross', false)}
+                      className={cn(
+                        'flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors',
+                        !form.is_gross
+                          ? 'border-indigo-600 bg-indigo-50 text-indigo-700 dark:border-indigo-500 dark:bg-indigo-900/20 dark:text-indigo-400'
+                          : 'border-zinc-300 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800',
+                      )}
+                    >
+                      {t('net')}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {Number(form.amount) > 0 && (
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  {form.is_gross
+                    ? `Netto: ${formatCurrency(grossToNet(Number(form.amount), Number(form.tax_rate)))}`
+                    : `Brutto: ${formatCurrency(netToGross(Number(form.amount), Number(form.tax_rate)))}`}
+                </p>
+              )}
+              {/* Renewal limit */}
+              {form.auto_renew && (
+                <Input
+                  id="max_renewals"
+                  label={t('maxRenewals')}
+                  type="number"
+                  value={form.max_renewals ?? ''}
+                  onChange={(e) => updateField('max_renewals', e.target.value || null)}
+                  placeholder="Unbegrenzt"
+                />
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <Input id="licenses_purchased" label={t('licensesPurchased')} type="number" value={form.licenses_purchased ?? ''} onChange={(e) => updateField('licenses_purchased', e.target.value || null)} />
                 <Input id="licenses_used" label={t('licensesUsed')} type="number" value={form.licenses_used ?? ''} onChange={(e) => updateField('licenses_used', e.target.value || null)} />
@@ -227,6 +293,27 @@ export function ContractForm({ categories, organizationId, userId, contract, use
             </CardContent>
           </Card>
         </div>
+
+        {/* Document Upload */}
+        <Card className="mt-6">
+          <CardHeader><CardTitle>{t('document')}</CardTitle></CardHeader>
+          <CardContent>
+            <FileUpload
+              bucket="contracts"
+              folder={organizationId}
+              currentUrl={form.document_url || null}
+              accept="application/pdf,image/jpeg,image/png,image/webp"
+              maxSizeMB={50}
+              label={t('uploadDocument')}
+              variant="document"
+              onUpload={(url) => updateField('document_url', url)}
+              onRemove={() => updateField('document_url', '')}
+            />
+            <p className="mt-2 text-xs text-zinc-400 dark:text-zinc-500">
+              {t('ocrUpload')} — OCR-Verarbeitung wird in einer zukünftigen Version verfügbar sein.
+            </p>
+          </CardContent>
+        </Card>
 
         {/* Notes */}
         <Card className="mt-6">

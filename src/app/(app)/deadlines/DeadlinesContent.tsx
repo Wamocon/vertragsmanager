@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/Card';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Breadcrumb } from '@/components/layout/Sidebar';
+import { useOrgDisplayName } from '@/lib/OrgContext';
 import type { Contract, Category } from '@/types/database';
 import { Clock, AlertTriangle, Download } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -16,6 +17,7 @@ interface DeadlinesContentProps {
 
 export function DeadlinesContent({ contracts }: DeadlinesContentProps) {
   const t = useTranslations('deadlines');
+  const orgDisplayName = useOrgDisplayName();
   const today = new Date();
 
   const grouped = useMemo(() => {
@@ -122,7 +124,7 @@ export function DeadlinesContent({ contracts }: DeadlinesContentProps) {
 
   return (
     <div className="space-y-6">
-      <Breadcrumb items={[{ label: 'Dashboard', href: '/dashboard' }, { label: t('title') }]} />
+      <Breadcrumb items={[{ label: orgDisplayName, href: '/dashboard' }, { label: t('title') }]} />
 
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">{t('title')}</h1>

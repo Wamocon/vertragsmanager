@@ -40,12 +40,19 @@ export default async function OrganizationPage() {
     .order('created_at', { ascending: false })
     .limit(20);
 
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('*')
+    .eq('organization_id', membership.organization_id)
+    .order('name');
+
   return (
     <OrganizationContent
       organization={org}
       members={members ?? []}
       invitations={invitations ?? []}
       auditLog={auditLog ?? []}
+      categories={categories ?? []}
       userRole={membership.role}
       currentUserId={user.id}
     />

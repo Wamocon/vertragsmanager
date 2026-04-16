@@ -1,27 +1,30 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   FileText,
   BarChart3,
   Clock,
   FileSignature,
-  Bell,
   Settings,
   Building2,
-  User,
   LogOut,
   Menu,
   X,
   ChevronRight,
+  Sun,
+  Moon,
+  Globe,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useTheme } from '@/hooks/useTheme';
+import { setLocale } from '@/lib/actions/setLocale';
+import Image from 'next/image';
 
 const navItems = [
   { key: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -32,17 +35,24 @@ const navItems = [
 ] as const;
 
 const bottomNavItems = [
-  { key: 'notifications', href: '/notifications', icon: Bell },
   { key: 'organization', href: '/organization', icon: Building2 },
-  { key: 'profile', href: '/profile', icon: User },
   { key: 'settings', href: '/settings', icon: Settings },
 ] as const;
 
-export function Sidebar({ unreadCount = 0 }: { unreadCount?: number }) {
+interface SidebarProps {
+  organizationName?: string;
+  organizationLogoUrl?: string | null;
+}
+
+export function Sidebar({ organizationName, organizationLogoUrl }: SidebarProps) {
   const t = useTranslations('nav');
+  const tSettings = useTranslations('settings');
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
+  const locale = useLocale();
+  const [isPending, startTransition] = useTransition();
 
   async function handleLogout() {
     const supabase = createClient();
@@ -50,15 +60,49 @@ export function Sidebar({ unreadCount = 0 }: { unreadCount?: number }) {
     router.push('/login');
   }
 
+  function handleLocaleChange(newLocale: 'de' | 'en') {
+    startTransition(async () => {
+      await setLocale(newLocale);
+      router.refresh();
+    });
+  }
+
+  const themeButtons = [
+    { value: 'light' as const, icon: Sun, label: tSettings('light') },
+    { value: 'dark' as const, icon: Moon, label: tSettings('dark') },
+  ];
+
   const sidebarContent = (
     <div className="flex h-full flex-col">
-      {/* Logo */}
-      <div className="flex h-16 items-center gap-2 border-b border-zinc-200 px-4 dark:border-zinc-800">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-sm">
+      {/* App Name */}
+      <div className="flex h-12 items-center gap-2 border-b border-zinc-200 px-4 dark:border-zinc-800">
+        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white font-bold text-xs">
           VM
         </div>
-        <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Vertragsmanager</span>
+        <span className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+          Vertragsmanager
+        </span>
       </div>
+
+      {/* Organization */}
+      {organizationName && (
+        <div className="flex items-center gap-2 border-b border-zinc-200 px-4 py-2.5 dark:border-zinc-800">
+          {organizationLogoUrl ? (
+            <Image
+              src={organizationLogoUrl}
+              alt={organizationName}
+              width={24}
+              height={24}
+              className="h-6 w-6 rounded object-cover"
+            />
+          ) : (
+            <Building2 className="h-5 w-5 text-zinc-400" />
+          )}
+          <span className="truncate text-sm font-medium text-zinc-600 dark:text-zinc-400">
+            {organizationName}
+          </span>
+        </div>
+      )}
 
       {/* Main nav */}
       <nav className="flex-1 space-y-1 px-2 py-4">
@@ -83,39 +127,86 @@ export function Sidebar({ unreadCount = 0 }: { unreadCount?: number }) {
         })}
       </nav>
 
-      {/* Bottom nav */}
-      <div className="space-y-1 border-t border-zinc-200 px-2 py-4 dark:border-zinc-800">
-        {bottomNavItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.key}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
+      {/* Bottom section */}
+      <div className="space-y-3 border-t border-zinc-200 px-2 py-4 dark:border-zinc-800">
+        {/* Theme toggle */}
+        <div className="flex items-center justify-between rounded-lg px-3 py-1">
+          <div className="flex gap-1 rounded-lg border border-zinc-200 p-0.5 dark:border-zinc-700">
+            {themeButtons.map((btn) => (
+              <button
+                key={btn.value}
+                onClick={() => setTheme(btn.value)}
+                title={btn.label}
+                className={cn(
+                  'rounded-md p-1.5 transition-colors',
+                  theme === btn.value
+                    ? 'bg-zinc-200 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-100'
+                    : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300',
+                )}
+              >
+                <btn.icon className="h-3.5 w-3.5" />
+              </button>
+            ))}
+          </div>
+          {/* Language toggle */}
+          <div className="flex items-center gap-1 rounded-lg border border-zinc-200 p-0.5 dark:border-zinc-700">
+            <Globe className="mx-1 h-3.5 w-3.5 text-zinc-400" />
+            <button
+              onClick={() => handleLocaleChange('de')}
+              disabled={isPending}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400'
-                  : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100',
+                'rounded-md px-1.5 py-1 text-xs font-medium transition-colors',
+                locale === 'de'
+                  ? 'bg-zinc-200 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-100'
+                  : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300',
               )}
             >
-              <item.icon className="h-5 w-5" />
-              <span className="flex-1">{t(item.key)}</span>
-              {item.key === 'notifications' && unreadCount > 0 && (
-                <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-xs font-medium text-white">
-                  {unreadCount}
-                </span>
+              DE
+            </button>
+            <button
+              onClick={() => handleLocaleChange('en')}
+              disabled={isPending}
+              className={cn(
+                'rounded-md px-1.5 py-1 text-xs font-medium transition-colors',
+                locale === 'en'
+                  ? 'bg-zinc-200 text-zinc-900 dark:bg-zinc-700 dark:text-zinc-100'
+                  : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300',
               )}
-            </Link>
-          );
-        })}
-        <button
-          onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-        >
-          <LogOut className="h-5 w-5" />
-          {t('logout')}
-        </button>
+            >
+              EN
+            </button>
+          </div>
+        </div>
+
+        {/* Nav links */}
+        <div className="space-y-1">
+          {bottomNavItems.map((item) => {
+            const isActive = pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.key}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-400'
+                    : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100',
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                <span className="flex-1">{t(item.key)}</span>
+              </Link>
+            );
+          })}
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+          >
+            <LogOut className="h-5 w-5" />
+            {t('logout')}
+          </button>
+        </div>
       </div>
     </div>
   );

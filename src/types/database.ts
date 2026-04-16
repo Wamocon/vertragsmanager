@@ -7,6 +7,8 @@ export interface Organization {
   id: string;
   name: string;
   slug: string;
+  short_name: string | null;
+  logo_url: string | null;
   is_active: boolean;
   created_at: string;
   updated_at: string;
@@ -24,6 +26,7 @@ export interface Profile {
   id: string;
   full_name: string | null;
   company_name: string | null;
+  avatar_url: string | null;
   language: 'de' | 'en';
   is_superadmin: boolean;
   is_active: boolean;
@@ -62,6 +65,10 @@ export interface Contract {
   document_url: string | null;
   customer_number: string | null;
   notes: string | null;
+  tax_rate: number;
+  is_gross: boolean;
+  renewal_count: number;
+  max_renewals: number | null;
   created_at: string;
   updated_at: string;
   // Joined

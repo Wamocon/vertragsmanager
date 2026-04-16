@@ -72,9 +72,9 @@ update public.profiles set is_superadmin = true where id = '00000000-0000-0000-0
 -- ============================================================
 -- 4. Organizations
 -- ============================================================
-insert into public.organizations (id, name, slug) values
-  ('00000000-0000-0000-0000-000000000100', 'WAMOCON GmbH', 'wamocon-gmbh'),
-  ('00000000-0000-0000-0000-000000000200', 'TechCorp AG', 'techcorp-ag');
+insert into public.organizations (id, name, slug, short_name) values
+  ('00000000-0000-0000-0000-000000000100', 'WAMOCON GmbH', 'wamocon-gmbh', 'WMC'),
+  ('00000000-0000-0000-0000-000000000200', 'TechCorp AG', 'techcorp-ag', 'TC');
 
 -- ============================================================
 -- 4. Organization Members
@@ -113,27 +113,31 @@ insert into public.categories (id, organization_id, name, color, is_system) valu
 -- ============================================================
 -- 6. Contracts (WAMOCON — created by admin)
 -- ============================================================
-insert into public.contracts (organization_id, category_id, created_by, name, provider, description, start_date, end_date, cancellation_period_days, auto_renew, amount, payment_interval, licenses_purchased, licenses_used, customer_number) values
-  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', 'Microsoft 365 Business', 'Microsoft', 'Office-Suite inkl. Teams, SharePoint, OneDrive', '2025-01-01', '2026-01-01', 30, true, 22.00, 'monthly', 15, 12, 'MS-2025-001'),
-  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', 'Adobe Creative Cloud', 'Adobe', 'Vollversion für Design-Team', '2025-03-15', '2026-03-15', 14, true, 65.49, 'monthly', 5, 5, 'ADO-88421'),
-  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', 'Slack Pro', 'Slack/Salesforce', 'Team-Kommunikation', '2025-06-01', '2026-06-01', 30, true, 7.25, 'monthly', 15, 10, null),
-  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000011', 'GitHub Enterprise', 'GitHub/Microsoft', 'Code-Repository und CI/CD', '2025-02-01', '2026-02-01', 30, true, 19.00, 'monthly', 8, 8, 'GH-ENT-5521'),
-  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000011', 'Jira Software', 'Atlassian', 'Projektmanagement', '2025-04-01', '2026-04-01', 30, true, 8.15, 'monthly', 10, 7, null),
-  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000010', 'Telekom Mobilfunk', 'Deutsche Telekom', '10 Mobilfunkverträge Business L', '2024-07-01', '2026-07-01', 90, true, 49.95, 'monthly', 10, 10, 'TK-BIZ-7891'),
-  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000010', 'Betriebshaftpflicht', 'Allianz', 'Betriebshaftpflichtversicherung bis 5 Mio EUR', '2025-01-01', '2026-01-01', 90, true, 1850.00, 'yearly', null, null, 'ALZ-BH-2025'),
-  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000010', 'Büro Eschborn', 'Immobilienverwaltung Rhein-Main', 'Bürofläche 120m²', '2023-04-01', '2028-04-01', 180, false, 2800.00, 'monthly', null, null, 'MV-2023-077'),
-  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000010', 'BMW 320d Leasing', 'BMW Financial Services', 'Geschäftsfahrzeug', '2024-10-01', '2027-10-01', 90, false, 489.00, 'monthly', 1, 1, 'BMW-LS-44521'),
-  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-000000000011', 'DATEV Unternehmen Online', 'DATEV', 'Steuerberater-Schnittstelle', '2025-01-01', '2026-12-31', 90, true, 42.50, 'monthly', 2, 2, 'DTV-UO-2025');
+insert into public.contracts (organization_id, category_id, created_by, name, provider, description, start_date, end_date, cancellation_period_days, auto_renew, amount, payment_interval, is_gross, tax_rate, status, licenses_purchased, licenses_used, customer_number) values
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', 'Microsoft 365 Business', 'Microsoft', 'Office-Suite inkl. Teams, SharePoint, OneDrive', '2025-01-01', '2026-01-01', 30, true, 22.00, 'monthly', false, 19, 'active', 15, 12, 'MS-2025-001'),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', 'Adobe Creative Cloud', 'Adobe', 'Vollversion für Design-Team', '2025-03-15', '2026-03-15', 14, true, 65.49, 'monthly', true, 19, 'active', 5, 5, 'ADO-88421'),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', 'Slack Pro', 'Slack/Salesforce', 'Team-Kommunikation', '2025-06-01', '2026-06-01', 30, true, 7.25, 'monthly', false, 19, 'active', 15, 10, null),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000011', 'GitHub Enterprise', 'GitHub/Microsoft', 'Code-Repository und CI/CD', '2025-02-01', '2026-02-01', 30, true, 228.00, 'yearly', false, 19, 'active', 8, 8, 'GH-ENT-5521'),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000011', 'Jira Software', 'Atlassian', 'Projektmanagement', '2025-04-01', '2026-04-01', 30, true, 97.80, 'quarterly', false, 19, 'active', 10, 7, null),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000010', 'Telekom Mobilfunk', 'Deutsche Telekom', '10 Mobilfunkverträge Business L', '2024-07-01', '2026-07-01', 90, true, 594.41, 'monthly', true, 19, 'active', 10, 10, 'TK-BIZ-7891'),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000010', 'Betriebshaftpflicht', 'Allianz', 'Betriebshaftpflichtversicherung bis 5 Mio EUR', '2025-01-01', '2026-01-01', 90, true, 1850.00, 'yearly', true, 19, 'active', null, null, 'ALZ-BH-2025'),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000010', 'Büro Eschborn', 'Immobilienverwaltung Rhein-Main', 'Bürofläche 120m²', '2023-04-01', '2028-04-01', 180, false, 2800.00, 'monthly', false, 19, 'active', null, null, 'MV-2023-077'),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000005', '00000000-0000-0000-0000-000000000010', 'BMW 320d Leasing', 'BMW Financial Services', 'Geschäftsfahrzeug', '2024-10-01', '2027-10-01', 90, false, 489.00, 'monthly', true, 19, 'active', 1, 1, 'BMW-LS-44521'),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000007', '00000000-0000-0000-0000-000000000011', 'DATEV Unternehmen Online', 'DATEV', 'Steuerberater-Schnittstelle', '2025-01-01', '2026-12-31', 90, true, 42.50, 'monthly', false, 19, 'active', 2, 2, 'DTV-UO-2025'),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000006', '00000000-0000-0000-0000-000000000010', 'Google Ads Kampagne', 'Google', 'Suchmaschinenwerbung', '2025-01-01', '2025-12-31', 30, false, 500.00, 'monthly', false, 19, 'expiring_soon', null, null, 'GADS-WMC-2025'),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000010', 'Dropbox Business', 'Dropbox', 'Cloud-Speicher (abgelöst durch OneDrive)', '2024-01-01', '2025-01-01', 30, false, 12.50, 'monthly', false, 19, 'cancelled', 15, 0, 'DB-WMC-2024'),
+  ('00000000-0000-0000-0000-000000000100', 'a0000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000010', 'Vodafone Festnetz', 'Vodafone', 'ISDN-Anschluss Büro (gekündigt)', '2022-06-01', '2024-06-01', 90, false, 39.99, 'monthly', true, 19, 'expired', null, null, 'VF-FN-WMC');
 
 -- ============================================================
 -- 7. Contracts (TechCorp — created by admin)
 -- ============================================================
-insert into public.contracts (organization_id, category_id, created_by, name, provider, description, start_date, end_date, cancellation_period_days, auto_renew, amount, payment_interval, licenses_purchased, licenses_used, customer_number) values
-  ('00000000-0000-0000-0000-000000000200', 'b0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000020', 'Google Workspace', 'Google', 'E-Mail und Drive für das Team', '2025-03-01', '2026-03-01', 30, true, 13.80, 'monthly', 25, 20, 'GWS-TC-2025'),
-  ('00000000-0000-0000-0000-000000000200', 'b0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000020', 'AWS EC2', 'Amazon Web Services', 'Cloud-Infrastruktur', '2025-01-01', '2026-01-01', 30, true, 1200.00, 'monthly', null, null, 'AWS-TC-7712'),
-  ('00000000-0000-0000-0000-000000000200', 'b0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000021', 'Figma Enterprise', 'Figma', 'Design-Tool für UX-Team', '2025-06-01', '2026-06-01', 30, true, 45.00, 'monthly', 10, 8, null),
-  ('00000000-0000-0000-0000-000000000200', 'b0000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000020', 'Vodafone Business Internet', 'Vodafone', 'Glasfaser Business 1000', '2025-01-01', '2027-01-01', 90, true, 89.99, 'monthly', 1, 1, 'VF-GLF-TC'),
-  ('00000000-0000-0000-0000-000000000200', 'b0000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000020', 'Cyber-Versicherung', 'HDI', 'Cyber-Risk inkl. Datenrettung', '2025-06-01', '2026-06-01', 60, true, 3200.00, 'yearly', null, null, 'HDI-CY-TC');
+insert into public.contracts (organization_id, category_id, created_by, name, provider, description, start_date, end_date, cancellation_period_days, auto_renew, amount, payment_interval, is_gross, tax_rate, status, licenses_purchased, licenses_used, customer_number) values
+  ('00000000-0000-0000-0000-000000000200', 'b0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000020', 'Google Workspace', 'Google', 'E-Mail und Drive für das Team', '2025-03-01', '2026-03-01', 30, true, 13.80, 'monthly', false, 19, 'active', 25, 20, 'GWS-TC-2025'),
+  ('00000000-0000-0000-0000-000000000200', 'b0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000020', 'AWS EC2', 'Amazon Web Services', 'Cloud-Infrastruktur', '2025-01-01', '2026-01-01', 30, true, 1200.00, 'monthly', false, 19, 'active', null, null, 'AWS-TC-7712'),
+  ('00000000-0000-0000-0000-000000000200', 'b0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000021', 'Figma Enterprise', 'Figma', 'Design-Tool für UX-Team', '2025-06-01', '2026-06-01', 30, true, 540.00, 'quarterly', true, 19, 'active', 10, 8, null),
+  ('00000000-0000-0000-0000-000000000200', 'b0000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000020', 'Vodafone Business Internet', 'Vodafone', 'Glasfaser Business 1000', '2025-01-01', '2027-01-01', 90, true, 89.99, 'monthly', true, 19, 'active', 1, 1, 'VF-GLF-TC'),
+  ('00000000-0000-0000-0000-000000000200', 'b0000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000020', 'Cyber-Versicherung', 'HDI', 'Cyber-Risk inkl. Datenrettung', '2025-06-01', '2026-06-01', 60, true, 3200.00, 'yearly', true, 19, 'active', null, null, 'HDI-CY-TC'),
+  ('00000000-0000-0000-0000-000000000200', 'b0000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000020', 'Heroku Dynos', 'Salesforce/Heroku', 'Legacy-App-Hosting (gekündigt)', '2023-01-01', '2025-03-01', 30, false, 250.00, 'monthly', false, 19, 'cancelled', null, null, 'HRK-TC-2023');
 
 -- ============================================================
 -- 8. Sample Comments

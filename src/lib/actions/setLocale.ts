@@ -1,0 +1,12 @@
+'use server';
+
+import { cookies } from 'next/headers';
+
+export async function setLocale(locale: 'de' | 'en') {
+  const cookieStore = await cookies();
+  cookieStore.set('locale', locale, {
+    path: '/',
+    maxAge: 365 * 24 * 60 * 60, // 1 year
+    sameSite: 'lax',
+  });
+}

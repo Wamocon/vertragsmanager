@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { Breadcrumb } from '@/components/layout/Sidebar';
+import { formatCurrency, computeMonthlyAmount } from '@/lib/format';
+import { useOrgDisplayName } from '@/lib/OrgContext';
 import type { Contract, Category, Notification, Profile, MemberRole } from '@/types/database';
 import { FileText, TrendingUp, Clock, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
@@ -16,21 +18,16 @@ interface DashboardContentProps {
   userRole: MemberRole;
 }
 
-function computeMonthlyAmount(contract: Contract): number {
-  switch (contract.payment_interval) {
-    case 'monthly': return Number(contract.amount);
-    case 'quarterly': return Number(contract.amount) / 3;
-    case 'yearly': return Number(contract.amount) / 12;
-    case 'one_time': return 0;
-    default: return 0;
-  }
+function getMonthly(contract: Contract): number {
+  return computeMonthlyAmount(Number(contract.amount), contract.payment_interval);
 }
 
 export function DashboardContent({ contracts, categories, profile }: DashboardContentProps) {
   const t = useTranslations('dashboard');
+  const orgDisplayName = useOrgDisplayName();
 
   const activeContracts = contracts.filter((c) => c.status !== 'cancelled');
-  const totalMonthly = activeContracts.reduce((sum, c) => sum + computeMonthlyAmount(c), 0);
+  const totalMonthly = activeContracts.reduce((sum, c) => sum + getMonthly(c), 0);
   const totalYearly = totalMonthly * 12;
 
   const today = new Date();
@@ -52,7 +49,7 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
   const costByCategory = categories
     .map((cat) => {
       const catContracts = activeContracts.filter((c) => c.category_id === cat.id);
-      const total = catContracts.reduce((sum, c) => sum + computeMonthlyAmount(c), 0);
+      const total = catContracts.reduce((sum, c) => sum + getMonthly(c), 0);
       return { name: cat.name, color: cat.color, total };
     })
     .filter((c) => c.total > 0)
@@ -60,7 +57,7 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
 
   return (
     <div className="space-y-6">
-      <Breadcrumb items={[{ label: t('title') }]} />
+      <Breadcrumb items={[{ label: orgDisplayName, href: '/dashboard' }, { label: t('title') }]} />
 
       <div>
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">{t('title')}</h1>
@@ -71,53 +68,61 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
 
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardContent className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-              <FileText className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-            </div>
-            <div>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('totalContracts')}</p>
-              <p className="text-2xl font-bold text-zinc-900 dark:text-white">{activeContracts.length}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <Link href="/contracts">
+          <Card className="transition-shadow hover:shadow-md cursor-pointer">
+            <CardContent className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+                <FileText className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <div>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('totalContracts')}</p>
+                <p className="text-2xl font-bold text-zinc-900 dark:text-white">{activeContracts.length}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardContent className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
-              <TrendingUp className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-            </div>
-            <div>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('monthlyCosts')}</p>
-              <p className="text-2xl font-bold text-zinc-900 dark:text-white">€{totalMonthly.toFixed(2)}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <Link href="/analytics">
+          <Card className="transition-shadow hover:shadow-md cursor-pointer">
+            <CardContent className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/30">
+                <TrendingUp className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('monthlyCosts')}</p>
+                <p className="text-2xl font-bold text-zinc-900 dark:text-white">{formatCurrency(totalMonthly)}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardContent className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
-              <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('yearlyCosts')}</p>
-              <p className="text-2xl font-bold text-zinc-900 dark:text-white">€{totalYearly.toFixed(2)}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <Link href="/analytics">
+          <Card className="transition-shadow hover:shadow-md cursor-pointer">
+            <CardContent className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                <TrendingUp className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('yearlyCosts')}</p>
+                <p className="text-2xl font-bold text-zinc-900 dark:text-white">{formatCurrency(totalYearly)}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
 
-        <Card>
-          <CardContent className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-              <Clock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-            </div>
-            <div>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('upcomingDeadlines')}</p>
-              <p className="text-2xl font-bold text-zinc-900 dark:text-white">{upcomingDeadlines.length}</p>
-            </div>
-          </CardContent>
-        </Card>
+        <Link href="/deadlines">
+          <Card className="transition-shadow hover:shadow-md cursor-pointer">
+            <CardContent className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
+                <Clock className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">{t('upcomingDeadlines')}</p>
+                <p className="text-2xl font-bold text-zinc-900 dark:text-white">{upcomingDeadlines.length}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -135,13 +140,13 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
                   <div key={cat.name} className="flex items-center gap-3">
                     <div className="h-3 w-3 rounded-full" style={{ backgroundColor: cat.color }} />
                     <span className="flex-1 text-sm text-zinc-700 dark:text-zinc-300">{cat.name}</span>
-                    <span className="text-sm font-medium text-zinc-900 dark:text-white">€{cat.total.toFixed(2)}/Mo</span>
+                    <span className="text-sm font-medium text-zinc-900 dark:text-white">{formatCurrency(cat.total)}/Mo</span>
                   </div>
                 ))}
                 <div className="border-t border-zinc-200 pt-2 dark:border-zinc-800">
                   <div className="flex items-center justify-between font-medium">
                     <span className="text-sm text-zinc-900 dark:text-white">Gesamt</span>
-                    <span className="text-sm text-zinc-900 dark:text-white">€{totalMonthly.toFixed(2)}/Mo</span>
+                    <span className="text-sm text-zinc-900 dark:text-white">{formatCurrency(totalMonthly)}/Mo</span>
                   </div>
                 </div>
               </div>
@@ -226,7 +231,7 @@ export function DashboardContent({ contracts, categories, profile }: DashboardCo
                         </Link>
                       </td>
                       <td className="py-3 text-zinc-600 dark:text-zinc-400">{contract.provider}</td>
-                      <td className="py-3 text-zinc-900 dark:text-white">€{computeMonthlyAmount(contract).toFixed(2)}</td>
+                      <td className="py-3 text-zinc-900 dark:text-white">{formatCurrency(getMonthly(contract))}</td>
                       <td className="py-3"><StatusBadge status={contract.status} /></td>
                     </tr>
                   ))}

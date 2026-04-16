@@ -1,57 +1,59 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
+import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Breadcrumb } from '@/components/layout/Sidebar';
-import { Sun, Moon, Monitor } from 'lucide-react';
+import { useTheme } from '@/hooks/useTheme';
+import { setLocale } from '@/lib/actions/setLocale';
+import { useOrgDisplayName } from '@/lib/OrgContext';
+import { cn } from '@/lib/utils';
+import { Sun, Moon } from 'lucide-react';
 
 export default function SettingsPage() {
   const t = useTranslations('settings');
+  const { theme, setTheme } = useTheme();
+  const locale = useLocale();
+  const router = useRouter();
+  const orgDisplayName = useOrgDisplayName();
+  const [isPending, startTransition] = useTransition();
 
-  function setTheme(theme: 'light' | 'dark' | 'system') {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else if (theme === 'light') {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    } else {
-      localStorage.removeItem('theme');
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    }
+  function handleLocaleChange(newLocale: 'de' | 'en') {
+    startTransition(async () => {
+      await setLocale(newLocale);
+      router.refresh();
+    });
   }
+
+  const themeOptions = [
+    { value: 'light' as const, icon: Sun, label: t('light') },
+    { value: 'dark' as const, icon: Moon, label: t('dark') },
+  ];
 
   return (
     <div className="space-y-6">
-      <Breadcrumb items={[{ label: 'Dashboard', href: '/dashboard' }, { label: t('title') }]} />
+      <Breadcrumb items={[{ label: orgDisplayName, href: '/dashboard' }, { label: t('title') }]} />
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">{t('title')}</h1>
 
       <Card>
         <CardHeader><CardTitle>{t('theme')}</CardTitle></CardHeader>
         <CardContent>
           <div className="flex gap-3">
-            <button
-              onClick={() => setTheme('light')}
-              className="flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
-            >
-              <Sun className="h-4 w-4" /> {t('light')}
-            </button>
-            <button
-              onClick={() => setTheme('dark')}
-              className="flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
-            >
-              <Moon className="h-4 w-4" /> {t('dark')}
-            </button>
-            <button
-              onClick={() => setTheme('system')}
-              className="flex items-center gap-2 rounded-lg border border-zinc-300 px-4 py-2 text-sm transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
-            >
-              <Monitor className="h-4 w-4" /> {t('system')}
-            </button>
+            {themeOptions.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => setTheme(opt.value)}
+                className={cn(
+                  'flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors',
+                  theme === opt.value
+                    ? 'border-indigo-600 bg-indigo-50 text-indigo-700 dark:border-indigo-500 dark:bg-indigo-900/20 dark:text-indigo-400'
+                    : 'border-zinc-300 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800',
+                )}
+              >
+                <opt.icon className="h-4 w-4" /> {opt.label}
+              </button>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -59,14 +61,31 @@ export default function SettingsPage() {
       <Card>
         <CardHeader><CardTitle>{t('language')}</CardTitle></CardHeader>
         <CardContent>
-          <p className="text-sm text-zinc-500 mb-3">Sprachumschaltung wird über die Profil-Einstellungen konfiguriert.</p>
           <div className="flex gap-3">
-            <span className="rounded-lg border border-indigo-600 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700 dark:border-indigo-500 dark:bg-indigo-900/20 dark:text-indigo-400">
-              🇩🇪 {t('german')}
-            </span>
-            <span className="rounded-lg border border-zinc-300 px-4 py-2 text-sm text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
-              🇬🇧 {t('english')}
-            </span>
+            <button
+              onClick={() => handleLocaleChange('de')}
+              disabled={isPending}
+              className={cn(
+                'rounded-lg border px-4 py-2 text-sm font-medium transition-colors',
+                locale === 'de'
+                  ? 'border-indigo-600 bg-indigo-50 text-indigo-700 dark:border-indigo-500 dark:bg-indigo-900/20 dark:text-indigo-400'
+                  : 'border-zinc-300 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800',
+              )}
+            >
+              {t('german')}
+            </button>
+            <button
+              onClick={() => handleLocaleChange('en')}
+              disabled={isPending}
+              className={cn(
+                'rounded-lg border px-4 py-2 text-sm font-medium transition-colors',
+                locale === 'en'
+                  ? 'border-indigo-600 bg-indigo-50 text-indigo-700 dark:border-indigo-500 dark:bg-indigo-900/20 dark:text-indigo-400'
+                  : 'border-zinc-300 text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800',
+              )}
+            >
+              {t('english')}
+            </button>
           </div>
         </CardContent>
       </Card>

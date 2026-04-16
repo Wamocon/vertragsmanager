@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Breadcrumb } from '@/components/layout/Sidebar';
+import { useOrgDisplayName } from '@/lib/OrgContext';
 import type { Contract, Profile } from '@/types/database';
 import { FileSignature, AlertTriangle, Download } from 'lucide-react';
 
@@ -49,6 +50,7 @@ function generateLetter(contract: Contract, templateType: string, orgName: strin
 
 export function TemplatesContent({ contracts, orgName, profile }: TemplatesContentProps) {
   const t = useTranslations('templates');
+  const orgDisplayName = useOrgDisplayName();
   const [selectedContract, setSelectedContract] = useState<string>('');
   const [selectedTemplate, setSelectedTemplate] = useState<string>('ordinary');
   const senderName = profile?.full_name ?? '';
@@ -69,7 +71,7 @@ export function TemplatesContent({ contracts, orgName, profile }: TemplatesConte
 
   return (
     <div className="space-y-6">
-      <Breadcrumb items={[{ label: 'Dashboard', href: '/dashboard' }, { label: t('title') }]} />
+      <Breadcrumb items={[{ label: orgDisplayName, href: '/dashboard' }, { label: t('title') }]} />
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-white">{t('title')}</h1>
 
       {/* Legal Disclaimer */}
