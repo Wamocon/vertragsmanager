@@ -1,9 +1,0 @@
-<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa Logo 3 Bell Alert">
-  <rect width="1024" height="1024" rx="220" fill="#FFF8EE"/>
-  <path d="M300 670 C300 470 360 380 512 330 C664 380 724 470 724 670 Z" fill="#F59E0B"/>
-  <rect x="270" y="670" width="484" height="70" rx="35" fill="#B45309"/>
-  <circle cx="512" cy="765" r="34" fill="#92400E"/>
-  <circle cx="760" cy="340" r="88" fill="#DC2626"/>
-  <text x="760" y="367" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="92" font-weight="700" fill="#FFFFFF">!</text>
-  <text x="512" y="190" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="90" font-weight="700" fill="#1F2937">VerWa</text>
-</svg>

@@ -1,7 +1,0 @@
-<svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vertragswächter Logo 5">
-  <rect width="1200" height="320" fill="#F8FAFC"/>
-  <rect x="82" y="74" width="156" height="156" rx="30" fill="#0B2239"/>
-  <path d="M112 116 L138 196 L160 144 L182 196 L208 116" fill="none" stroke="#2DD4BF" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="292" y="146" font-family="Segoe UI, Arial, sans-serif" font-size="66" font-weight="700" fill="#0F172A">Vertragswächter</text>
-  <text x="292" y="196" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#475569">Der digitale Wächter für Verträge.</text>
-</svg>

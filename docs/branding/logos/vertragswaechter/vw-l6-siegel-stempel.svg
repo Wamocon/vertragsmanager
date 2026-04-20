@@ -1,8 +1,0 @@
-<svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vertragswächter Logo 6">
-  <rect width="1200" height="320" fill="#FFFDF8"/>
-  <circle cx="160" cy="160" r="82" fill="#92400E"/>
-  <circle cx="160" cy="160" r="60" fill="#FDE68A"/>
-  <path d="M130 160 L152 182 L192 138" fill="none" stroke="#92400E" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="292" y="146" font-family="Georgia, Times New Roman, serif" font-size="64" font-weight="700" fill="#3F2A15">Vertragswächter</text>
-  <text x="292" y="196" font-family="Segoe UI, Arial, sans-serif" font-size="27" fill="#6B4F2E">Geprüft. Geordnet. Geschützt.</text>
-</svg>

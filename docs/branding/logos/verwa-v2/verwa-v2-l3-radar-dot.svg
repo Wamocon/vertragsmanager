@@ -1,9 +1,0 @@
-<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa V2 Logo 3 Radar Dot">
-  <rect width="1024" height="1024" rx="224" fill="#F8FAFC"/>
-  <circle cx="512" cy="512" r="292" fill="#0F172A"/>
-  <circle cx="512" cy="512" r="210" fill="none" stroke="#7DD3FC" stroke-width="20" opacity="0.95"/>
-  <circle cx="512" cy="512" r="128" fill="none" stroke="#7DD3FC" stroke-width="20" opacity="0.8"/>
-  <path d="M512 512 L674 404" stroke="#34D399" stroke-width="28" stroke-linecap="round"/>
-  <circle cx="692" cy="392" r="30" fill="#F97316"/>
-  <circle cx="512" cy="512" r="32" fill="#F8FAFC"/>
-</svg>

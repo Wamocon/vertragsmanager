@@ -1,7 +1,0 @@
-<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa Logo 7 Lock Paragraph">
-  <rect width="1024" height="1024" rx="220" fill="#F5F7FF"/>
-  <rect x="300" y="410" width="424" height="330" rx="56" fill="#1E3A8A"/>
-  <path d="M390 410 V350 C390 280 445 225 512 225 C579 225 634 280 634 350 V410" fill="none" stroke="#1E3A8A" stroke-width="60"/>
-  <text x="512" y="620" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="172" font-weight="700" fill="#FFFFFF">§</text>
-  <text x="512" y="190" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="90" font-weight="700" fill="#0F172A">VerWa</text>
-</svg>

@@ -1,6 +1,0 @@
-<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa Logo 10 Minimal V">
-  <rect width="1024" height="1024" rx="220" fill="#FFFFFF"/>
-  <circle cx="512" cy="560" r="300" fill="#0F766E"/>
-  <path d="M360 420 L470 730 L512 590 L554 730 L664 420" fill="none" stroke="#FFFFFF" stroke-width="64" stroke-linecap="round" stroke-linejoin="round"/>
-  <text x="512" y="190" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="90" font-weight="700" fill="#0B2239">VerWa</text>
-</svg>

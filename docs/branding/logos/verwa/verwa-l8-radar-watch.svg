@@ -1,9 +1,0 @@
-<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa Logo 8 Radar Watch">
-  <rect width="1024" height="1024" rx="220" fill="#F1F9F7"/>
-  <circle cx="512" cy="560" r="300" fill="#0B2239"/>
-  <circle cx="512" cy="560" r="220" fill="none" stroke="#2DD4BF" stroke-width="24"/>
-  <circle cx="512" cy="560" r="140" fill="none" stroke="#2DD4BF" stroke-width="24"/>
-  <line x1="512" y1="560" x2="690" y2="440" stroke="#22C55E" stroke-width="30" stroke-linecap="round"/>
-  <circle cx="704" cy="430" r="32" fill="#EF4444"/>
-  <text x="512" y="190" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="90" font-weight="700" fill="#0B2239">VerWa</text>
-</svg>
