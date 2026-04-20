@@ -15,7 +15,7 @@ interface UserWithDetails extends Profile {
 
 const roleLabel: Record<string, string> = {
   company_admin: 'Unternehmensadmin',
-  manager: 'Vertragsmanager',
+  manager: 'VerWa',
   reader: 'Leser',
 };
 
@@ -106,7 +106,7 @@ export function UsersContent({ users }: { users: UserWithDetails[] }) {
         >
           <option value="all">Alle Rollen</option>
           <option value="company_admin">Unternehmensadmin</option>
-          <option value="manager">Vertragsmanager</option>
+          <option value="manager">VerWa</option>
           <option value="reader">Leser</option>
           <option value="none">Keine Rolle</option>
         </select>

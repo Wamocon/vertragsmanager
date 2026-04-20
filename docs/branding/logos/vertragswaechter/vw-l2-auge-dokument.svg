@@ -1,0 +1,11 @@
+<svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vertragswächter Logo 2">
+  <rect width="1200" height="320" fill="#F8FAFC"/>
+  <ellipse cx="168" cy="162" rx="98" ry="64" fill="#1D4ED8"/>
+  <ellipse cx="168" cy="162" rx="70" ry="44" fill="#FFFFFF"/>
+  <circle cx="168" cy="162" r="24" fill="#0B2239"/>
+  <rect x="96" y="80" width="64" height="82" rx="10" fill="#0EA5A5"/>
+  <line x1="110" y1="106" x2="146" y2="106" stroke="#FFFFFF" stroke-width="6"/>
+  <line x1="110" y1="124" x2="146" y2="124" stroke="#FFFFFF" stroke-width="6"/>
+  <text x="292" y="146" font-family="Segoe UI, Arial, sans-serif" font-size="66" font-weight="700" fill="#0F172A">Vertragswächter</text>
+  <text x="292" y="196" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#475569">Verträge im Blick behalten.</text>
+</svg>

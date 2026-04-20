@@ -55,7 +55,7 @@ export function DeadlinesContent({ contracts }: DeadlinesContentProps) {
     const lines = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
-      'PRODID:-//Vertragsmanager//DE',
+      'PRODID:-//VerWa//DE',
     ];
 
     for (const c of contracts) {
@@ -77,7 +77,7 @@ export function DeadlinesContent({ contracts }: DeadlinesContentProps) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'vertragsmanager_fristen.ics';
+    a.download = 'verwa_fristen.ics';
     a.click();
     URL.revokeObjectURL(url);
   }

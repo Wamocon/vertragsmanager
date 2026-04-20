@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { BrandLogo } from '@/components/branding/BrandLogo';
 
 export default function LoginPage() {
   const t = useTranslations('auth');
@@ -53,8 +54,8 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4 dark:bg-zinc-950">
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600 text-xl font-bold text-white">
-            VM
+          <div className="flex justify-center">
+            <BrandLogo size={48} showName={false} />
           </div>
           <h1 className="mt-4 text-2xl font-bold text-zinc-900 dark:text-white">{t('loginTitle')}</h1>
         </div>

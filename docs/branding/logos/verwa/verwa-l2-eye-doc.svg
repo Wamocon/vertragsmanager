@@ -1,0 +1,10 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa Logo 2 Eye Document">
+  <rect width="1024" height="1024" rx="220" fill="#F8FAFC"/>
+  <ellipse cx="512" cy="560" rx="320" ry="210" fill="#2563EB"/>
+  <ellipse cx="512" cy="560" rx="230" ry="145" fill="#FFFFFF"/>
+  <circle cx="512" cy="560" r="86" fill="#0B2239"/>
+  <rect x="280" y="250" width="220" height="270" rx="28" fill="#14B8A6"/>
+  <line x1="330" y1="330" x2="450" y2="330" stroke="#FFFFFF" stroke-width="24"/>
+  <line x1="330" y1="380" x2="450" y2="380" stroke="#FFFFFF" stroke-width="24"/>
+  <text x="512" y="180" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="90" font-weight="700" fill="#0B2239">VerWa</text>
+</svg>

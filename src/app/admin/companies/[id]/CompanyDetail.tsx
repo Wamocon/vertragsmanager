@@ -21,7 +21,7 @@ interface CompanyDetailProps {
 }
 
 const roleIcon: Record<MemberRole, typeof Shield> = { company_admin: Shield, manager: Pencil, reader: Eye };
-const roleLabel: Record<MemberRole, string> = { company_admin: 'Unternehmensadmin', manager: 'Vertragsmanager', reader: 'Leser' };
+const roleLabel: Record<MemberRole, string> = { company_admin: 'Unternehmensadmin', manager: 'VerWa', reader: 'Leser' };
 const roleOrder: Record<MemberRole, number> = { company_admin: 0, manager: 1, reader: 2 };
 
 export function CompanyDetail({ organization, members, contracts }: CompanyDetailProps) {

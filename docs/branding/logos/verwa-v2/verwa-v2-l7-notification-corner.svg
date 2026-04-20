@@ -1,0 +1,10 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa V2 Logo 7 Notification Corner">
+  <rect width="1024" height="1024" rx="224" fill="#FFFFFF"/>
+  <path d="M280 238 H612 L744 370 V720 H280 Z" fill="#0F172A"/>
+  <path d="M612 238 V370 H744" fill="#334155"/>
+  <line x1="356" y1="446" x2="660" y2="446" stroke="#E2E8F0" stroke-width="32" stroke-linecap="round"/>
+  <line x1="356" y1="530" x2="610" y2="530" stroke="#E2E8F0" stroke-width="32" stroke-linecap="round"/>
+  <line x1="356" y1="614" x2="548" y2="614" stroke="#E2E8F0" stroke-width="32" stroke-linecap="round"/>
+  <circle cx="736" cy="292" r="86" fill="#F97316"/>
+  <text x="736" y="324" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="92" font-weight="700" fill="#FFFFFF">1</text>
+</svg>

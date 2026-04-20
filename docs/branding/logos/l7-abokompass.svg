@@ -1,0 +1,10 @@
+<svg width="960" height="280" viewBox="0 0 960 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="AboKompass logo">
+  <rect width="960" height="280" fill="#FAFCF8"/>
+  <circle cx="120" cy="140" r="72" fill="#0B2239"/>
+  <circle cx="120" cy="140" r="52" fill="#FFFFFF"/>
+  <circle cx="120" cy="140" r="34" fill="#E2E8F0"/>
+  <circle cx="120" cy="140" r="12" fill="#F59E0B"/>
+  <path d="M120 88 L148 140 L120 140 Z" fill="#0F8B8D"/>
+  <text x="220" y="128" font-family="Segoe UI, Arial, sans-serif" font-size="62" font-weight="700" fill="#0B2239">AboKompass</text>
+  <text x="220" y="174" font-family="Segoe UI, Arial, sans-serif" font-size="25" fill="#475569">Alle Abos im Fokus.</text>
+</svg>

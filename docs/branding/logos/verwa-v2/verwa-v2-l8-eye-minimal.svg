@@ -1,0 +1,14 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa V2 Logo 8 Eye Minimal">
+  <rect width="1024" height="1024" rx="224" fill="#0F172A"/>
+  <g fill="none" stroke="#F8FAFC" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="116" y1="112" x2="512" y2="514"/>
+    <line x1="908" y1="112" x2="512" y2="514"/>
+    <line x1="116" y1="912" x2="512" y2="514"/>
+    <line x1="908" y1="912" x2="512" y2="514"/>
+    <path d="M512 762 L658 614 L512 466 L366 614 Z"/>
+  </g>
+  <path d="M212 514 C286 380 390 312 512 312 C634 312 738 380 812 514 C738 648 634 716 512 716 C390 716 286 648 212 514 Z" fill="#F8FAFC"/>
+  <circle cx="512" cy="514" r="122" fill="#14B8A6"/>
+  <circle cx="512" cy="514" r="62" fill="#0F172A"/>
+  <circle cx="564" cy="462" r="22" fill="#F8FAFC"/>
+</svg>

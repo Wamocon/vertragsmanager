@@ -1,0 +1,11 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa V2 Logo 9 Grid Ledger">
+  <rect width="1024" height="1024" rx="224" fill="#F8FAFC"/>
+  <rect x="248" y="248" width="528" height="528" rx="96" fill="#E2E8F0"/>
+  <rect x="292" y="292" width="440" height="440" rx="70" fill="#0F172A"/>
+  <line x1="408" y1="332" x2="408" y2="692" stroke="#14B8A6" stroke-width="26"/>
+  <line x1="512" y1="332" x2="512" y2="692" stroke="#14B8A6" stroke-width="26"/>
+  <line x1="616" y1="332" x2="616" y2="692" stroke="#14B8A6" stroke-width="26"/>
+  <line x1="332" y1="436" x2="692" y2="436" stroke="#14B8A6" stroke-width="26"/>
+  <line x1="332" y1="540" x2="692" y2="540" stroke="#14B8A6" stroke-width="26"/>
+  <rect x="596" y="520" width="124" height="124" rx="32" fill="#F97316"/>
+</svg>

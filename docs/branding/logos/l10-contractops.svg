@@ -1,0 +1,9 @@
+<svg width="960" height="280" viewBox="0 0 960 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ContractOps logo">
+  <rect width="960" height="280" fill="#F8FAFC"/>
+  <rect x="62" y="62" width="116" height="116" rx="26" fill="#0B2239"/>
+  <path d="M96 120 C96 98 146 98 146 120 C146 142 96 142 96 120 Z" fill="none" stroke="#0F8B8D" stroke-width="10"/>
+  <circle cx="96" cy="120" r="7" fill="#1D4ED8"/>
+  <circle cx="146" cy="120" r="7" fill="#1D4ED8"/>
+  <text x="220" y="128" font-family="Segoe UI, Arial, sans-serif" font-size="66" font-weight="700" fill="#0B2239">ContractOps</text>
+  <text x="220" y="174" font-family="Segoe UI, Arial, sans-serif" font-size="25" fill="#475569">Operational contract control.</text>
+</svg>

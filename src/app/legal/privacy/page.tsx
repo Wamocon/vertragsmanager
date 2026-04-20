@@ -7,7 +7,7 @@ export default function PrivacyPage() {
         <h2>1. Verantwortlicher</h2>
         <p>WAMOCON GmbH, Mergenthalerallee 79 - 81, 65760 Eschborn<br />Telefon: +49 6196 5838311<br />E-Mail: info@wamocon.com<br />Geschäftsführer: Dipl.-Ing. Waleri Moretz</p>
         <h2>2. Überblick</h2>
-        <p>Diese Datenschutzerklärung gilt für die Webanwendung Vertragsmanager. Wir verarbeiten personenbezogene Daten nur, soweit dies zur Bereitstellung einer funktionsfähigen Plattform erforderlich ist.</p>
+        <p>Diese Datenschutzerklärung gilt für die Webanwendung Vertragswächter. Wir verarbeiten personenbezogene Daten nur, soweit dies zur Bereitstellung einer funktionsfähigen Plattform erforderlich ist.</p>
         <h2>3. Rechtsgrundlagen</h2>
         <ul>
           <li>Einwilligung — Art. 6 Abs. 1 lit. a DSGVO</li>

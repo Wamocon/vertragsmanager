@@ -1,0 +1,10 @@
+<svg width="960" height="280" viewBox="0 0 960 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RenewDesk logo">
+  <rect width="960" height="280" fill="#FDFCF7"/>
+  <rect x="62" y="66" width="116" height="148" rx="20" fill="#0B5F60"/>
+  <rect x="76" y="98" width="88" height="100" rx="10" fill="#FFFFFF"/>
+  <line x1="76" y1="114" x2="164" y2="114" stroke="#0F8B8D" stroke-width="8"/>
+  <path d="M94 154 A26 26 0 1 0 146 154" stroke="#1D4ED8" stroke-width="9" fill="none"/>
+  <path d="M141 142 L149 155 L134 159" fill="#1D4ED8"/>
+  <text x="220" y="128" font-family="Segoe UI, Arial, sans-serif" font-size="62" font-weight="700" fill="#1F2937">RenewDesk</text>
+  <text x="220" y="174" font-family="Segoe UI, Arial, sans-serif" font-size="25" fill="#475569">Renewals without surprises.</text>
+</svg>

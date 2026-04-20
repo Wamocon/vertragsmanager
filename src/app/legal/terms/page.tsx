@@ -5,7 +5,7 @@ export default function TermsPage() {
       <div className="mt-8 prose prose-zinc dark:prose-invert max-w-none">
         <p>Stand: April 2026</p>
         <h2>§ 1 Geltungsbereich</h2>
-        <p>Diese AGB der WAMOCON GmbH gelten für alle Verträge über die Nutzung der SaaS-Plattform Vertragsmanager. Das Angebot richtet sich an Unternehmen und gewerbliche Nutzer (B2B).</p>
+        <p>Diese AGB der WAMOCON GmbH gelten für alle Verträge über die Nutzung der SaaS-Plattform Vertragswächter. Das Angebot richtet sich an Unternehmen und gewerbliche Nutzer (B2B).</p>
         <h2>§ 2 Vertragsschluss</h2>
         <p>Der Vertrag kommt durch Abschluss des Registrierungsprozesses und Akzeptanz dieser AGB zustande.</p>
         <h2>§ 3 Leistungsbeschreibung</h2>

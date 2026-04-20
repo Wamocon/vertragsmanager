@@ -1,0 +1,10 @@
+<svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vertragswächter Logo 4">
+  <rect width="1200" height="320" fill="#FFF9F3"/>
+  <path d="M102 196 C102 148 114 116 160 96 C206 116 218 148 218 196 H102 Z" fill="#F59E0B"/>
+  <rect x="94" y="196" width="132" height="20" rx="10" fill="#B45309"/>
+  <circle cx="160" cy="220" r="10" fill="#B45309"/>
+  <circle cx="220" cy="110" r="24" fill="#DC2626"/>
+  <text x="220" y="118" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF">!</text>
+  <text x="292" y="146" font-family="Segoe UI, Arial, sans-serif" font-size="66" font-weight="700" fill="#1F2937">Vertragswächter</text>
+  <text x="292" y="196" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#4B5563">Fristen rechtzeitig sichern.</text>
+</svg>

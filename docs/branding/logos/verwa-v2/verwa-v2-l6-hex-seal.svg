@@ -1,0 +1,8 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa V2 Logo 6 Hex Seal">
+  <rect width="1024" height="1024" rx="224" fill="#F8FAFC"/>
+  <path d="M512 186 L736 314 V570 L512 698 L288 570 V314 Z" fill="#0F172A"/>
+  <path d="M512 262 L670 352 V532 L512 622 L354 532 V352 Z" fill="#14B8A6"/>
+  <path d="M448 478 L496 526 L584 438" fill="none" stroke="#FFFFFF" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="512" cy="782" r="56" fill="#0F172A"/>
+  <text x="512" y="804" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="54" font-weight="700" fill="#FFFFFF">V</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa Logo 6 Seal Premium">
+  <rect width="1024" height="1024" rx="220" fill="#FFF9EE"/>
+  <circle cx="512" cy="560" r="300" fill="#7C4A1E"/>
+  <circle cx="512" cy="560" r="220" fill="#FDE68A"/>
+  <path d="M410 560 L488 638 L628 500" fill="none" stroke="#7C4A1E" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="512" y="190" text-anchor="middle" font-family="Georgia, Times New Roman, serif" font-size="92" font-weight="700" fill="#4A2C10">VerWa</text>
+</svg>

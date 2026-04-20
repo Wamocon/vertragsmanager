@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { FileText, Clock, BarChart3, FileSignature, Shield, Users } from 'lucide-react';
+import { BrandLogo } from '@/components/branding/BrandLogo';
 
 const features = [
   { icon: FileText, title: 'OCR-Dokumentenerfassung', description: 'Laden Sie Vertraege hoch oder fotografieren Sie sie. Kerndaten werden automatisch extrahiert.' },
@@ -22,10 +23,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/70">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-sm font-bold text-white dark:text-zinc-950">VM</div>
-            <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">Vertragsmanager</span>
-          </div>
+          <BrandLogo />
           <div className="flex items-center gap-3">
             <Link href="/login" className="rounded-lg px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white">
               Anmelden
@@ -50,7 +48,7 @@ export default function HomePage() {
             Fristen sichern.
           </h1>
           <p className="mt-5 max-w-xl text-base text-zinc-600 sm:text-lg dark:text-zinc-300">
-            Vertragsmanager bringt Vertragsdaten, Fristen und Kosten in einen gefuehrten Workflow. Ihr Team entscheidet schneller und verpasst keine Kuendigungsfenster.
+            VerWa (Vertragswächter) bringt Vertragsdaten, Fristen und Kosten in einen gefuehrten Workflow. Ihr Team entscheidet schneller und verpasst keine Kuendigungsfenster.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link href="/register" className="rounded-xl bg-brand px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-brand-strong dark:text-zinc-950">
@@ -147,7 +145,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="flex items-center gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded bg-brand text-xs font-bold text-white dark:text-zinc-950">VM</div>
+              <BrandLogo size={24} showName={false} />
               <span className="text-sm font-medium text-zinc-600 dark:text-zinc-400">(c) 2026 WAMOCON GmbH</span>
             </div>
             <div className="flex gap-6 text-sm text-zinc-600 dark:text-zinc-400">

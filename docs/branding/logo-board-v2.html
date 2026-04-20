@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Logo Board V2 - Vertragsmanager</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --line: #cbd5e1;
+      --accent: #0f8b8d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: radial-gradient(circle at 10% 0%, #e2e8f0 0%, #f8fafc 45%, #eef2ff 100%);
+      color: var(--ink);
+      padding: 28px;
+    }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    p { margin: 0 0 20px; color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      box-shadow: 0 14px 35px -25px rgba(15, 23, 42, 0.45);
+    }
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .meta strong { font-size: 17px; }
+    .meta span { font-size: 13px; color: var(--muted); }
+    img {
+      width: 100%;
+      height: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      display: block;
+      background: #fff;
+    }
+    .badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #ecfeff;
+      color: #0b5f60;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid #a5f3fc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Logo Vergleich V2</h1>
+  <p>Direkter Vergleich von 10 Logo-Kandidaten. Fokus: Lesbarkeit, Professionalitaet, Wiedererkennung.</p>
+
+  <section class="grid">
+    <article class="card">
+      <div class="meta"><strong>L1 FristenPilot</strong><span>Kompass + Check</span></div>
+      <img src="logos/l1-fristenpilot.svg" alt="L1 FristenPilot" />
+      <span class="badge">Top Klarheit</span>
+    </article>
+
+    <article class="card">
+      <div class="meta"><strong>L2 VertragsKompass</strong><span>Kompass klassisch</span></div>
+      <img src="logos/l2-vertragskompass.svg" alt="L2 VertragsKompass" />
+      <span class="badge">Top B2B-Vertrauen</span>
+    </article>
+
+    <article class="card">
+      <div class="meta"><strong>L3 ContractPilot</strong><span>Schild + Route</span></div>
+      <img src="logos/l3-contractpilot.svg" alt="L3 ContractPilot" />
+      <span class="badge">International</span>
+    </article>
+
+    <article class="card">
+      <div class="meta"><strong>L4 RenewDesk</strong><span>Kalender + Zyklus</span></div>
+      <img src="logos/l4-renewdesk.svg" alt="L4 RenewDesk" />
+      <span class="badge">SaaS-Look</span>
+    </article>
+
+    <article class="card">
+      <div class="meta"><strong>L5 PactFlow</strong><span>Flow Network</span></div>
+      <img src="logos/l5-pactflow.svg" alt="L5 PactFlow" />
+      <span class="badge">Favicon-stark</span>
+    </article>
+
+    <article class="card">
+      <div class="meta"><strong>L6 ClauseTrack</strong><span>Dokument + Tracking</span></div>
+      <img src="logos/l6-clausetrack.svg" alt="L6 ClauseTrack" />
+      <span class="badge">Feature-nah</span>
+    </article>
+
+    <article class="card">
+      <div class="meta"><strong>L7 AboKompass</strong><span>Radar Fokus</span></div>
+      <img src="logos/l7-abokompass.svg" alt="L7 AboKompass" />
+      <span class="badge">DACH-verständlich</span>
+    </article>
+
+    <article class="card">
+      <div class="meta"><strong>L8 TermGrid</strong><span>Grid + Deadline</span></div>
+      <img src="logos/l8-termgrid.svg" alt="L8 TermGrid" />
+      <span class="badge">Systematisch</span>
+    </article>
+
+    <article class="card">
+      <div class="meta"><strong>L9 CostGuard</strong><span>Euro + Shield</span></div>
+      <img src="logos/l9-costguard.svg" alt="L9 CostGuard" />
+      <span class="badge">Finanzfokus</span>
+    </article>
+
+    <article class="card">
+      <div class="meta"><strong>L10 ContractOps</strong><span>Monogramm</span></div>
+      <img src="logos/l10-contractops.svg" alt="L10 ContractOps" />
+      <span class="badge">Modern B2B</span>
+    </article>
+  </section>
+</body>
+</html>

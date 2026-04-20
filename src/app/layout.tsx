@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Vertragsmanager — Alle Verträge. Ein Überblick.',
-  description: 'Webbasierte SaaS-Plattform für KMU im DACH-Raum: Verträge erfassen, Fristen verwalten, Kosten kontrollieren.',
+  title: 'VerWa — Alle Verträge. Ein Überblick.',
+  description: 'VerWa (Vertragswächter): Webbasierte SaaS-Plattform für KMU im DACH-Raum, um Verträge zu erfassen, Fristen zu verwalten und Kosten zu kontrollieren.',
 };
 
 export default async function RootLayout({

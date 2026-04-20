@@ -1,0 +1,6 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="VerWa Logo 4 Monogram VW">
+  <rect width="1024" height="1024" rx="220" fill="#0B2239"/>
+  <path d="M210 310 L320 760 L512 430 L704 760 L814 310" fill="none" stroke="#2DD4BF" stroke-width="70" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="512" cy="200" r="90" fill="#FFFFFF"/>
+  <text x="512" y="230" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="96" font-weight="700" fill="#0B2239">V</text>
+</svg>

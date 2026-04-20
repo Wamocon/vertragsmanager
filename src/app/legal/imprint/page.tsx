@@ -25,7 +25,7 @@ export default function ImprintPage() {
         </p>
         <h2>Angaben zum Angebot</h2>
         <p>
-          Vertragsmanager ist eine webbasierte Software-as-a-Service-Plattform für die Verwaltung
+          Vertragswächter ist eine webbasierte Software-as-a-Service-Plattform für die Verwaltung
           von Unternehmensverträgen, Abonnements und Lizenzen. Das Angebot richtet sich primär an
           Unternehmen und gewerbliche Nutzer.
         </p>

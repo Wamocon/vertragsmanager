@@ -25,6 +25,7 @@ import { createClient } from '@/lib/supabase/client';
 import { useTheme } from '@/hooks/useTheme';
 import { setLocale } from '@/lib/actions/setLocale';
 import Image from 'next/image';
+import { BrandLogo } from '@/components/branding/BrandLogo';
 
 const navItems = [
   { key: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -76,12 +77,7 @@ export function Sidebar({ organizationName, organizationLogoUrl }: SidebarProps)
     <div className="flex h-full flex-col">
       {/* App Name */}
       <div className="flex h-14 items-center gap-2 border-b border-zinc-200 bg-white/75 px-4 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/70">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-white font-bold text-xs dark:text-zinc-950">
-          VM
-        </div>
-        <span className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-          Vertragsmanager
-        </span>
+        <BrandLogo />
       </div>
 
       {/* Organization */}

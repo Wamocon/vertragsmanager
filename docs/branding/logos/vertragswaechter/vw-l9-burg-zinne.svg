@@ -1,0 +1,11 @@
+<svg width="1200" height="320" viewBox="0 0 1200 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vertragswächter Logo 9">
+  <rect width="1200" height="320" fill="#F4F7FB"/>
+  <rect x="84" y="104" width="152" height="126" rx="8" fill="#334155"/>
+  <rect x="84" y="84" width="28" height="28" fill="#334155"/>
+  <rect x="128" y="84" width="28" height="28" fill="#334155"/>
+  <rect x="172" y="84" width="28" height="28" fill="#334155"/>
+  <rect x="208" y="84" width="28" height="28" fill="#334155"/>
+  <rect x="148" y="152" width="24" height="78" rx="8" fill="#94A3B8"/>
+  <text x="292" y="146" font-family="Segoe UI, Arial, sans-serif" font-size="66" font-weight="700" fill="#1E293B">Vertragswächter</text>
+  <text x="292" y="196" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#64748B">Stabile Kontrolle für jede Laufzeit.</text>
+</svg>

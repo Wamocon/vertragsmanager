@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Vertragsmanager",
+    "appName": "VerWa",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -349,7 +349,7 @@
     "color": "Color",
     "addCategory": "Add",
     "companyAdmin": "Company Admin",
-    "manager": "Contract Manager",
+    "manager": "VerWa",
     "reader": "Reader",
     "removeMemberConfirmTitle": "Remove Member",
     "removeMemberConfirmMessage": "Are you sure you want to remove this member from the organization?",
